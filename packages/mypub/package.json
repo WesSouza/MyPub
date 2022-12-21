@@ -1,6 +1,6 @@
 {
   "name": "mypub",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "type": "module",
   "description": "Set of TypeScript functions to implement ActivityPub endpoints on any Node, Cloud or Deno server",
   "author": "Wes Souza <hey@wes.dev>",
