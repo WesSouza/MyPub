@@ -1,0 +1,49 @@
+{
+  "name": "mypub",
+  "version": "0.0.1",
+  "type": "module",
+  "description": "Set of TypeScript functions to implement ActivityPub endpoints on any Node, Cloud or Deno server",
+  "author": "Wes Souza <hey@wes.dev>",
+  "homepage": "https://github.com/WesSouza/MyPub",
+  "bugs": "https://github.com/WesSouza/MyPub/issues",
+  "license": "MIT",
+  "repository": "github:WesSouza/MyPub",
+  "keywords": [
+    "activitypub",
+    "activitystreams",
+    "fediverse",
+    "mastodon"
+  ],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    "import": "./dist/index.js",
+    "require": "./dist/index.cjs"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "rollup -c",
+    "check:types": "tsc --noEmit",
+    "lint": "eslint --cache src && prettier --check src"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=16.19.0",
+    "pnpm": ">=7"
+  },
+  "packageManager": "pnpm@7.18.2",
+  "pnpm": {},
+  "dependencies": {},
+  "devDependencies": {
+    "@rollup/plugin-typescript": "^10.0.1",
+    "esbuild": "^0.16.10",
+    "rollup": "^3.7.5",
+    "rollup-plugin-esbuild": "^5.0.0",
+    "typescript": "^4.9.4"
+  }
+}
