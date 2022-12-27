@@ -6,6 +6,8 @@ import { singleUser } from "@mypub/single-user";
 import { fastify } from "fastify";
 import { MyPub } from "mypub";
 
+import "dotenv/config.js";
+
 export const myPub = new MyPub({
   instance: {
     domain: process.env.INSTANCE_DOMAIN ?? "",

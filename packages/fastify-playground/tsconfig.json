@@ -13,5 +13,8 @@
     { "path": "../s3" },
     { "path": "../single-user" },
     { "path": "../types" }
-  ]
+  ],
+  "ts-node": {
+    "esm": true
+  }
 }
