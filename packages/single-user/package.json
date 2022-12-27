@@ -1,10 +1,10 @@
 {
-  "name": "mypub",
+  "name": "@mypub/single-user",
   "version": "0.0.2",
   "type": "module",
-  "description": "Set of TypeScript functions to implement ActivityPub endpoints on any Node, Cloud or Deno server",
+  "description": "MyPub single user adapter",
   "author": "Wes Souza <hey@wes.dev>",
-  "homepage": "https://github.com/WesSouza/MyPub",
+  "homepage": "https://github.com/WesSouza/MyPub/tree/main/packages/single-user",
   "bugs": "https://github.com/WesSouza/MyPub/issues",
   "license": "MIT",
   "repository": "github:WesSouza/MyPub",

@@ -1,10 +1,10 @@
 {
-  "name": "mypub",
+  "name": "@mypub/s3",
   "version": "0.0.2",
   "type": "module",
-  "description": "Set of TypeScript functions to implement ActivityPub endpoints on any Node, Cloud or Deno server",
+  "description": "MyPub S3 storage adapter",
   "author": "Wes Souza <hey@wes.dev>",
-  "homepage": "https://github.com/WesSouza/MyPub",
+  "homepage": "https://github.com/WesSouza/MyPub/tree/main/packages/s3",
   "bugs": "https://github.com/WesSouza/MyPub/issues",
   "license": "MIT",
   "repository": "github:WesSouza/MyPub",
@@ -12,7 +12,8 @@
     "activitypub",
     "activitystreams",
     "fediverse",
-    "mastodon"
+    "mastodon",
+    "s3"
   ],
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",

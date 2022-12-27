@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "lib": ["DOM"],
+    "outDir": "./dist",
+    "rootDir": "./src"
+  },
+  "include": ["src/**/*.ts"],
+  "references": [
+    { "path": "../memory" },
+    { "path": "../mongodb" },
+    { "path": "../mypub" },
+    { "path": "../s3" },
+    { "path": "../single-user" },
+    { "path": "../types" }
+  ]
+}

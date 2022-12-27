@@ -1,10 +1,10 @@
 {
-  "name": "mypub",
+  "name": "@mypub/fastify",
   "version": "0.0.2",
   "type": "module",
-  "description": "Set of TypeScript functions to implement ActivityPub endpoints on any Node, Cloud or Deno server",
+  "description": "MyPub Fastify Plugin",
   "author": "Wes Souza <hey@wes.dev>",
-  "homepage": "https://github.com/WesSouza/MyPub",
+  "homepage": "https://github.com/WesSouza/MyPub/tree/main/packages/fastify",
   "bugs": "https://github.com/WesSouza/MyPub/issues",
   "license": "MIT",
   "repository": "github:WesSouza/MyPub",
@@ -12,7 +12,8 @@
     "activitypub",
     "activitystreams",
     "fediverse",
-    "mastodon"
+    "mastodon",
+    "fastify"
   ],
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -36,9 +37,17 @@
   },
   "packageManager": "pnpm@7.18.2",
   "pnpm": {},
-  "dependencies": {},
+  "peerDependencies": {
+    "fastify": ">=4.10.2",
+    "mypub": "workspace:*"
+  },
+  "dependencies": {
+    "fastify-plugin": "^4.4.0"
+  },
   "devDependencies": {
     "@mypub/build-utils": "workspace:*",
-    "@mypub/types": "workspace:*"
+    "@mypub/types": "workspace:*",
+    "fastify": "^4.10.2",
+    "mypub": "workspace:*"
   }
 }

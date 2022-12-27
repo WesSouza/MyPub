@@ -1,0 +1,28 @@
+{
+  "name": "@mypub/build-utils",
+  "version": "0.0.2",
+  "type": "module",
+  "description": "MyPub build utils",
+  "author": "Wes Souza <hey@wes.dev>",
+  "homepage": "https://github.com/WesSouza/MyPub/tree/main/packages/build-utils",
+  "bugs": "https://github.com/WesSouza/MyPub/issues",
+  "license": "MIT",
+  "repository": "github:WesSouza/MyPub",
+  "keywords": [],
+  "main": "./rollup.config.base.js",
+  "exports": {
+    "import": "./rollup.config.base.js"
+  },
+  "files": [
+    "rollup.config.base.js"
+  ],
+  "scripts": {},
+  "engines": {
+    "node": ">=18",
+    "pnpm": ">=7"
+  },
+  "packageManager": "pnpm@7.18.2",
+  "pnpm": {},
+  "dependencies": {},
+  "devDependencies": {}
+}

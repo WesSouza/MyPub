@@ -7,6 +7,5 @@
     "rootDir": "./src",
     "tsBuildInfoFile": ".cache/tsbuildinfo"
   },
-  "include": ["src/**/*.ts"],
-  "references": [{ "path": "../types" }]
+  "include": ["src/**/*.ts"]
 }

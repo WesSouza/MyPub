@@ -1,10 +1,10 @@
 {
-  "name": "mypub",
+  "name": "@mypub/mongodb",
   "version": "0.0.2",
   "type": "module",
-  "description": "Set of TypeScript functions to implement ActivityPub endpoints on any Node, Cloud or Deno server",
+  "description": "MyPub MongoDB data adapter",
   "author": "Wes Souza <hey@wes.dev>",
-  "homepage": "https://github.com/WesSouza/MyPub",
+  "homepage": "https://github.com/WesSouza/MyPub/tree/main/packages/mongodb",
   "bugs": "https://github.com/WesSouza/MyPub/issues",
   "license": "MIT",
   "repository": "github:WesSouza/MyPub",
@@ -12,7 +12,8 @@
     "activitypub",
     "activitystreams",
     "fediverse",
-    "mastodon"
+    "mastodon",
+    "mongodb"
   ],
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -36,7 +37,9 @@
   },
   "packageManager": "pnpm@7.18.2",
   "pnpm": {},
-  "dependencies": {},
+  "dependencies": {
+    "mongoose": "^6.8.1"
+  },
   "devDependencies": {
     "@mypub/build-utils": "workspace:*",
     "@mypub/types": "workspace:*"

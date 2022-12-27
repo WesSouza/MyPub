@@ -5,7 +5,10 @@ dist/
 node_modules/
 
 # caches
+.cache
 .eslintcache
+.rollup.cache
+*.tsbuildinfo
 
 # logs
 npm-debug.log*
@@ -20,6 +23,9 @@ pnpm-debug.log*
 
 # macOS-specific files
 .DS_Store
+
+# VSCode
+.vscode/settings.json
 
 # Vercel
 .vercel

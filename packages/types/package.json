@@ -1,31 +1,26 @@
 {
-  "name": "mypub",
+  "name": "@mypub/types",
   "version": "0.0.2",
   "type": "module",
-  "description": "Set of TypeScript functions to implement ActivityPub endpoints on any Node, Cloud or Deno server",
+  "description": "MyPub types",
   "author": "Wes Souza <hey@wes.dev>",
-  "homepage": "https://github.com/WesSouza/MyPub",
+  "homepage": "https://github.com/WesSouza/MyPub/tree/main/packages/types",
   "bugs": "https://github.com/WesSouza/MyPub/issues",
   "license": "MIT",
   "repository": "github:WesSouza/MyPub",
-  "keywords": [
-    "activitypub",
-    "activitystreams",
-    "fediverse",
-    "mastodon"
-  ],
-  "main": "./dist/index.cjs",
+  "keywords": [],
+  "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     "import": "./dist/index.js",
-    "require": "./dist/index.cjs"
+    "require": "./dist/index.js"
   },
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "rollup -c",
+    "build": "tsc",
     "check": "pnpm run check:types && pnpm run lint",
     "check:types": "tsc --noEmit",
     "lint": "eslint --cache --cache-location \".cache/eslintcache\" src && prettier --check src"
@@ -37,8 +32,5 @@
   "packageManager": "pnpm@7.18.2",
   "pnpm": {},
   "dependencies": {},
-  "devDependencies": {
-    "@mypub/build-utils": "workspace:*",
-    "@mypub/types": "workspace:*"
-  }
+  "devDependencies": {}
 }
