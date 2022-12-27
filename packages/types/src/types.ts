@@ -1,4 +1,16 @@
-export type ActorCollections =
+export type ActivityPubPathSegment =
+  | "activity"
+  | "followers"
+  | "following"
+  | "inbox"
+  | "liked"
+  | "outbox"
+  | "replies"
+  | "sharedInbox"
+  | "statuses"
+  | "users";
+
+export type ActorCollection =
   | "Followers"
   | "Following"
   | "Inbox"
@@ -20,6 +32,7 @@ export type MyPubInstanceData = {
   description: string;
   email: string;
   adminUserId: string;
+  pathSegments: Record<ActivityPubPathSegment, string>;
 };
 
 export type MyPubContext = {
@@ -33,7 +46,8 @@ export type MyPubContext = {
 export type ContextWrapped<T> = (context: MyPubContext) => T;
 
 export type MyPubConfig = {
-  instance: MyPubContext["instance"];
+  instance: Omit<MyPubInstanceData, "pathSegments"> &
+    Partial<Pick<MyPubInstanceData, "pathSegments">>;
   cache: ContextWrapped<MyPubCacheModule>;
   data: ContextWrapped<MyPubDataModule>;
   storage: ContextWrapped<MyPubStorageModule>;

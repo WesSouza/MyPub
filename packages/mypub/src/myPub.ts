@@ -1,9 +1,10 @@
 import type {
-  ActorCollections,
+  ActorCollection,
   MyPubConfig,
   MyPubContext,
   MyPubInstanceData,
 } from "@mypub/types";
+
 import { Errors, ErrorStatuses, ErrorType } from "./constants/Errors.js";
 
 export class MyPub {
@@ -11,8 +12,23 @@ export class MyPub {
   private context: Partial<MyPubContext> = {};
 
   constructor(config: Readonly<MyPubConfig>) {
+    this.instance = {
+      ...config.instance,
+      pathSegments: config.instance.pathSegments ?? {
+        activity: "activity",
+        followers: "followers",
+        following: "following",
+        inbox: "inbox",
+        liked: "liked",
+        outbox: "outbox",
+        replies: "replies",
+        sharedInbox: "sharedInbox",
+        statuses: "statuses",
+        users: "users",
+      },
+    };
+
     const outerContext = this.context;
-    this.instance = config.instance;
     const context = {} as MyPubContext;
     Object.defineProperty(context, "instance", {
       get() {
@@ -55,7 +71,7 @@ export class MyPub {
       },
     });
 
-    this.context.instance = config.instance;
+    this.context.instance = this.instance;
     this.context.cache = config.cache(context);
     this.context.data = config.data(context);
     this.context.storage = config.storage(context);
@@ -90,12 +106,19 @@ export class MyPub {
 
   handleActorCollection = (
     _: Request,
-    _1: { actorHandle: string; collection: ActorCollections },
+    _1: { actorHandle: string; collection: ActorCollection },
   ) => {
     return this.respondWithError("notFound", Errors.X_notImplemented);
   };
 
-  handleInboxPost = (_: Request, _1?: { actorHandle: string }) => {
+  handleActorObject = (
+    _: Request,
+    _1: { actorHandle: string; objectId: string },
+  ) => {
+    return this.respondWithError("notFound", Errors.X_notImplemented);
+  };
+
+  handleInboxPost = (_: Request, _1?: { actorHandle?: string }) => {
     return this.respondWithError("notFound", Errors.X_notImplemented);
   };
 
