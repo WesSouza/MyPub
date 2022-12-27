@@ -1,11 +1,18 @@
-import type { ActorCollections, MyPubConfig, MyPubContext } from "@mypub/types";
+import type {
+  ActorCollections,
+  MyPubConfig,
+  MyPubContext,
+  MyPubInstanceData,
+} from "@mypub/types";
 import { Errors, ErrorStatuses, ErrorType } from "./constants/Errors.js";
 
 export class MyPub {
+  readonly instance: MyPubInstanceData;
   private context: Partial<MyPubContext> = {};
 
   constructor(config: Readonly<MyPubConfig>) {
     const outerContext = this.context;
+    this.instance = config.instance;
     const context = {} as MyPubContext;
     Object.defineProperty(context, "instance", {
       get() {
@@ -63,7 +70,7 @@ export class MyPub {
     return new Response(
       `<?xml version="1.0" encoding="UTF-8"?>
   <XRD xmlns="http://docs.oasis-open.org/ns/xri/xrd-1.0">
-    <Link rel="lrdd" template="https://${this.context.instance?.domain}.well-known/webfinger?resource={uri}"/>
+    <Link rel="lrdd" template="https://${this.context.instance?.domain}/.well-known/webfinger?resource={uri}"/>
   </XRD>`,
       {
         headers: {
