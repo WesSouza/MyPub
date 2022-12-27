@@ -7,6 +7,8 @@ import type {
 import fp from "fastify-plugin";
 import { MyPub } from "mypub";
 
+import { replyWithResponse, unwrapFastifyRequest } from "./utils/fastify.js";
+
 export function myPubFastify(
   myPub: MyPub,
 ): FastifyPluginAsync<
@@ -15,8 +17,10 @@ export function myPubFastify(
   FastifyTypeProviderDefault
 > {
   return fp(async (fastify) => {
-    fastify.post("/.well-known/host-meta", {}, (_, reply) => {
-      reply.send(myPub.handleHostMeta(new Request("/")));
+    fastify.get("/.well-known/host-meta", {}, (fastifyRequest, reply) => {
+      const request = unwrapFastifyRequest(fastifyRequest);
+      const response = myPub.handleHostMeta(request) as Response;
+      replyWithResponse(reply, response);
     });
   });
 }
