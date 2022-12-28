@@ -32,5 +32,8 @@ export default [
         tsconfig: "./tsconfig.json",
       }),
     ],
+    watch: {
+      clearScreen: false,
+    },
   },
 ];
