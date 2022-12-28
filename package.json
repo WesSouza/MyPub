@@ -2,7 +2,11 @@
   "name": "mypub-root",
   "version": "0.0.0",
   "private": true,
-  "scripts": {},
+  "scripts": {
+    "build": "pnpm run -r build",
+    "check": "pnpm run -r check",
+    "dev": "pnpm run -r --parallel --stream dev"
+  },
   "workspaces": [
     "packages/*"
   ],

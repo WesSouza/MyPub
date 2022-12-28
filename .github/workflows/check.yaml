@@ -1,0 +1,31 @@
+name: Build and Code Check
+
+on:
+  pull_request:
+  push:
+
+jobs:
+  check:
+    name: pnpm check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Install Node.js 18
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          run_install: |
+            - args: [--frozen-lockfile, --strict-peer-dependencies]
+
+      - name: Run Build
+        run: pnpm run build
+
+      - name: Run Checks
+        run: pnpm run check
