@@ -64,15 +64,46 @@ export type MyPubCacheModule = {
   ) => void | Promise<void>;
 };
 
-export type UserData = {
-  id: string;
+export type User = {
   url: string;
+  handle: string;
+  domain: string;
   name: string;
+  summary: string;
+  tag: string[];
+  links: { name: string; href: string }[];
+  images: {
+    cover: string | undefined;
+    profile: string | undefined;
+  };
+  followers: {
+    items?: UserReference[];
+    total: number;
+  };
+  following: {
+    items?: UserReference[];
+    total: number;
+  };
+  content: {
+    total: number;
+  };
+  created: Date;
+  updated: Date;
 };
 
-export type UserReference = {
-  id: string;
-  url: string;
+export type UserReference = Pick<
+  User,
+  | "content"
+  | "created"
+  | "domain"
+  | "handle"
+  | "images"
+  | "name"
+  | "updated"
+  | "url"
+> & {
+  followers: Pick<User["followers"], "total">;
+  following: Pick<User["following"], "total">;
 };
 
 export type Pagination =
@@ -94,7 +125,9 @@ export type Collection<T> = {
 };
 
 export type MyPubDataModule = {
-  getUserData: (userId: string) => AsyncResult<UserData>;
+  getUser: (userId: string) => AsyncResult<User>;
+  getUserByUrl: (url: string) => AsyncResult<User>;
+  getUserByHandle: (accountHandle: string) => AsyncResult<User>;
   getUserFollowing: (
     userId: string,
     page: Pagination,
@@ -127,5 +160,5 @@ export type MyPubStorageModule = {
 };
 
 export type MyPubUsersModule = {
-  getUserData: (userId: string) => AsyncResult<UserData>;
+  getUser: (userId: string) => AsyncResult<User>;
 };

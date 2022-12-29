@@ -17,29 +17,26 @@ export function unwrapFastifyRequest(fastifyRequest: FastifyRequest): Request {
   );
 }
 
-export function replyWithResponse(reply: FastifyReply, response: Response) {
-  function startReply() {
-    reply.code(response.status);
-    response.headers.forEach((value, key) => {
-      reply.header(key, value);
-    });
-  }
-
+export async function replyWithResponse(
+  reply: FastifyReply,
+  response: Response,
+) {
   if (!response.body) {
-    startReply();
-    reply.send();
     return;
   }
 
-  response
-    .arrayBuffer()
-    .then((data) => {
-      startReply();
-      reply.send(Buffer.from(data));
-    })
-    .catch((error) => {
-      console.error(error);
-      reply.code(500);
-      reply.send();
-    });
+  reply.code(response.status);
+  response.headers.forEach((value, key) => {
+    reply.header(key, value);
+  });
+
+  if (
+    response.headers.get("content-type")?.startsWith("application/octet-stream")
+  ) {
+    const data = await response.arrayBuffer();
+    return Buffer.from(data);
+  }
+
+  const data = await response.text();
+  return data;
 }

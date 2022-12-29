@@ -38,11 +38,15 @@
   },
   "packageManager": "pnpm@7.18.2",
   "pnpm": {},
+  "peerDependencies": {
+    "mypub": "workspace:*"
+  },
   "dependencies": {
     "mongoose": "^6.8.1"
   },
   "devDependencies": {
     "@mypub/build-utils": "workspace:*",
-    "@mypub/types": "workspace:*"
+    "@mypub/types": "workspace:*",
+    "mypub": "workspace:*"
   }
 }

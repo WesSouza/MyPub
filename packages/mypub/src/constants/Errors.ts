@@ -1,4 +1,4 @@
-export type ErrorType = "generic" | "notFound";
+export type ErrorType = "generic" | "badRequest" | "notFound";
 
 export const ErrorStatuses: Record<
   ErrorType,
@@ -8,6 +8,10 @@ export const ErrorStatuses: Record<
     status: 500,
     statusText: "Internal Server Error",
   },
+  badRequest: {
+    status: 400,
+    statusText: "Bad Request",
+  },
   notFound: {
     status: 404,
     statusText: "Not Found",
@@ -15,6 +19,8 @@ export const ErrorStatuses: Record<
 };
 
 export const Errors = {
+  badRequest: "badRequest",
   missingInstance: "missingInstance",
+  notFound: "notFound",
   X_notImplemented: "X_notImplemented",
 } as const;

@@ -25,28 +25,27 @@ export function myPubFastify(
   return fp(async (fastify) => {
     const { pathSegments } = myPub.instance;
 
-    fastify.get("/.well-known/host-meta", {}, (fastifyRequest, reply) => {
-      const request = unwrapFastifyRequest(fastifyRequest);
-      const response = myPub.handleHostMeta(request);
-      replyWithResponse(reply, response);
+    fastify.get("/.well-known/host-meta", {}, async (_, reply) => {
+      const response = await myPub.handleHostMeta();
+      return replyWithResponse(reply, response);
     });
 
-    fastify.get("/.well-known/webfinger", {}, (fastifyRequest, reply) => {
+    fastify.get("/.well-known/webfinger", {}, async (fastifyRequest, reply) => {
       const request = unwrapFastifyRequest(fastifyRequest);
-      const response = myPub.handleWebFinger(request);
-      replyWithResponse(reply, response);
+      const response = await myPub.handleWebFinger(request);
+      return replyWithResponse(reply, response);
     });
 
     fastify.get<{ Params: { actorHandle: string } }>(
       `/${pathSegments.users}/:actorHandle`,
       {},
-      (fastifyRequest, reply) => {
+      async (fastifyRequest, reply) => {
         const { actorHandle } = fastifyRequest.params;
         const request = unwrapFastifyRequest(fastifyRequest);
-        const response = myPub.handleActor(request, {
+        const response = await myPub.handleActor(request, {
           actorHandle,
         });
-        replyWithResponse(reply, response);
+        return replyWithResponse(reply, response);
       },
     );
 
@@ -59,14 +58,14 @@ export function myPubFastify(
       fastify.get<{ Params: { actorHandle: string } }>(
         `/${pathSegments.users}/:actorHandle/${path}`,
         {},
-        (fastifyRequest, reply) => {
+        async (fastifyRequest, reply) => {
           const { actorHandle } = fastifyRequest.params;
           const request = unwrapFastifyRequest(fastifyRequest);
-          const response = myPub.handleActorCollection(request, {
+          const response = await myPub.handleActorCollection(request, {
             actorHandle,
             collection: collection as ActorCollection,
           });
-          replyWithResponse(reply, response);
+          return replyWithResponse(reply, response);
         },
       );
     });
@@ -74,21 +73,21 @@ export function myPubFastify(
     fastify.get<{ Params: { objectId: string; actorHandle: string } }>(
       `/${pathSegments.users}/:actorHandle/${pathSegments.statuses}/:objectId`,
       {},
-      (fastifyRequest, reply) => {
+      async (fastifyRequest, reply) => {
         const { actorHandle, objectId } = fastifyRequest.params;
         const request = unwrapFastifyRequest(fastifyRequest);
-        const response = myPub.handleActorObject(request, {
+        const response = await myPub.handleActorObject(request, {
           actorHandle,
           objectId,
         });
-        replyWithResponse(reply, response);
+        return replyWithResponse(reply, response);
       },
     );
 
     fastify.get<{ Params: { objectId: string; actorHandle: string } }>(
       `/${pathSegments.users}/:actorHandle/${pathSegments.statuses}/:objectId/${pathSegments.activity}`,
       {},
-      (fastifyRequest, reply) => {
+      async (fastifyRequest, reply) => {
         const { actorHandle, objectId } = fastifyRequest.params;
         console.log("getActivity", actorHandle, objectId);
         reply.code(404).send({ error: Errors.X_notImplemented });
@@ -98,27 +97,27 @@ export function myPubFastify(
     fastify.get<{ Params: { objectId: string; actorHandle: string } }>(
       `/${pathSegments.users}/:actorHandle/${pathSegments.statuses}/:objectId/${pathSegments.replies}`,
       {},
-      (fastifyRequest, reply) => {
+      async (fastifyRequest, reply) => {
         const { actorHandle, objectId } = fastifyRequest.params;
         console.log("getReplies", actorHandle, objectId);
         reply.code(404).send({ error: Errors.X_notImplemented });
       },
     );
 
-    fastify.post(`/${SharedInbox.path}`, {}, (fastifyRequest, reply) => {
+    fastify.post(`/${SharedInbox.path}`, {}, async (fastifyRequest, reply) => {
       const request = unwrapFastifyRequest(fastifyRequest);
-      const response = myPub.handleInboxPost(request);
-      replyWithResponse(reply, response);
+      const response = await myPub.handleInboxPost(request);
+      return replyWithResponse(reply, response);
     });
 
     fastify.post<{ Params: { actorHandle: string } }>(
       `/${pathSegments.users}/:actorHandle/${pathSegments.inbox}`,
       {},
-      (fastifyRequest, reply) => {
+      async (fastifyRequest, reply) => {
         const { actorHandle } = fastifyRequest.params;
         const request = unwrapFastifyRequest(fastifyRequest);
-        const response = myPub.handleInboxPost(request, { actorHandle });
-        replyWithResponse(reply, response);
+        const response = await myPub.handleInboxPost(request, { actorHandle });
+        return replyWithResponse(reply, response);
       },
     );
   });

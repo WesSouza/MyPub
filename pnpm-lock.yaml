@@ -96,11 +96,13 @@ importers:
       '@mypub/build-utils': workspace:*
       '@mypub/types': workspace:*
       mongoose: ^6.8.1
+      mypub: workspace:*
     dependencies:
       mongoose: 6.8.1
     devDependencies:
       '@mypub/build-utils': link:../build-utils
       '@mypub/types': link:../types
+      mypub: link:../mypub
 
   packages/mypub:
     specifiers:
