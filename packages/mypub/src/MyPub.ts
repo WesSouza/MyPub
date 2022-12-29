@@ -3,12 +3,13 @@ import type {
   MyPubConfig,
   MyPubInstanceData,
 } from "@mypub/types";
-import { hostMeta } from "./wellKnown/hostMeta.js";
+import { actor } from "./activity-pub/actor.js";
 
 import { Errors } from "./constants/Errors.js";
-import { respondWithError } from "./utils/http-response.js";
-import { webFinger } from "./wellKnown/webFinger.js";
 import { MyPubContext } from "./MyPubContext.js";
+import { respondWithError } from "./utils/http-response.js";
+import { hostMeta } from "./wellKnown/hostMeta.js";
+import { webFinger } from "./wellKnown/webFinger.js";
 
 export class MyPub {
   readonly instance: MyPubInstanceData;
@@ -27,8 +28,15 @@ export class MyPub {
     return webFinger(this.context, request);
   };
 
-  handleActor = (_: Request, _1: { actorHandle?: string }) => {
-    return respondWithError("notFound", Errors.X_notImplemented);
+  handleActor = (
+    request: Request,
+    { actorHandle }: { actorHandle?: string },
+  ) => {
+    if (!actorHandle) {
+      return respondWithError("notFound", Errors.notFound);
+    }
+
+    return actor(this.context, request, actorHandle);
   };
 
   handleActorCollection = (

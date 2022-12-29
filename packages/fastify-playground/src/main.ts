@@ -25,12 +25,50 @@ export const myPub = new MyPub({
     secretAccessKey: process.env.B2_KEY_SECRET ?? "",
   }),
   users: singleUser({
+    userId: process.env.INSTANCE_ADMIN_USER_ID ?? "",
     privateKey: process.env.USER_PRIVATE_KEY?.replace(/\\n/g, "\n") ?? "",
     publicKey: process.env.USER_PUBLIC_KEY?.replace(/\\n/g, "\n") ?? "",
   }),
 });
 
-const server = fastify({ trustProxy: true });
+const server = fastify({
+  logger: {
+    transport: {
+      target: "pino-pretty",
+    },
+    serializers: {
+      req(request) {
+        return {
+          requestId: request.id,
+          method: request.method,
+          url: request.url,
+          headers: request.headers,
+        };
+      },
+    },
+  },
+  trustProxy: true,
+});
+
+server.addHook("preHandler", function (req, _, done) {
+  if (req.body) {
+    if (
+      typeof req.body === "object" &&
+      "type" in req.body &&
+      req.body?.type === "Delete" &&
+      "id" in req.body &&
+      typeof req.body.id === "string" &&
+      req.body.id.match(/https?:\/\/[^\/]+\/users\/[^#\/]+#delete/)
+    ) {
+      req.log.info({ requestId: req.id, delete: req.body.id });
+      done();
+      return;
+    }
+
+    req.log.info({ requestId: req.id, body: req.body });
+  }
+  done();
+});
 
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
 

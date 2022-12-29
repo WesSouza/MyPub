@@ -3,7 +3,7 @@ import { MyPubContext } from "@mypub/types";
 import { Errors } from "../constants/index.js";
 import { respondWithError } from "../utils/http-response.js";
 
-export function hostMeta(context: MyPubContext) {
+export async function hostMeta(context: MyPubContext) {
   if (!context.instance) {
     return respondWithError("generic", Errors.missingInstance);
   }

@@ -2,6 +2,7 @@ import { MyPubContext, MyPubDataModule } from "@mypub/types";
 import mongoose from "mongoose";
 import { Errors } from "mypub";
 import { UserModel } from "./models/User.js";
+import { withStringId } from "./utils/mongodb.js";
 
 export function mongodb({ uri }: { uri: string }) {
   async function connect() {
@@ -10,6 +11,7 @@ export function mongodb({ uri }: { uri: string }) {
     ) {
       return;
     }
+    mongoose.set("strictQuery", true);
     await mongoose.connect(uri);
   }
 
@@ -22,7 +24,8 @@ export function mongodb({ uri }: { uri: string }) {
           return { error: Errors.notFound };
         }
 
-        return user.toObject();
+        const userObject = user.toObject();
+        return withStringId(userObject);
       },
       getUserByHandle: async (accountHandle: string) => {
         await connect();
@@ -38,7 +41,8 @@ export function mongodb({ uri }: { uri: string }) {
           return { error: Errors.notFound };
         }
 
-        return user.toObject();
+        const userObject = user.toObject();
+        return withStringId(userObject);
       },
       getUserByUrl: async (url: string) => {
         await connect();
@@ -47,7 +51,8 @@ export function mongodb({ uri }: { uri: string }) {
           return { error: Errors.notFound };
         }
 
-        return user.toObject();
+        const userObject = user.toObject();
+        return withStringId(userObject);
       },
       getUserFollowing: async () => {
         await connect();

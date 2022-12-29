@@ -65,6 +65,7 @@ export type MyPubCacheModule = {
 };
 
 export type User = {
+  id: string;
   url: string;
   handle: string;
   domain: string;
@@ -104,6 +105,11 @@ export type UserReference = Pick<
 > & {
   followers: Pick<User["followers"], "total">;
   following: Pick<User["following"], "total">;
+};
+
+export type UserKeys = {
+  publicKey: string;
+  privateKey: string;
 };
 
 export type Pagination =
@@ -160,5 +166,6 @@ export type MyPubStorageModule = {
 };
 
 export type MyPubUsersModule = {
-  getUser: (userId: string) => AsyncResult<User>;
+  getUserKeys: (userId: string) => AsyncResult<UserKeys>;
+  signRequest: (userId: string, request: Request) => Request;
 };
