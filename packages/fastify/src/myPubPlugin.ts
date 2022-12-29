@@ -1,4 +1,5 @@
 import type {
+  FastifyBodyParser,
   FastifyPluginAsync,
   FastifyPluginOptions,
   FastifyTypeProviderDefault,
@@ -24,6 +25,42 @@ export function myPubFastify(
 > {
   return fp(async (fastify) => {
     const { pathSegments } = myPub.instance;
+
+    const parseJson: FastifyBodyParser<string> = function parseJson(
+      _,
+      body,
+      done,
+    ) {
+      try {
+        done(null, JSON.parse(body));
+      } catch (error) {
+        if (error instanceof Error) {
+          // @ts-expect-error
+          error.statusCode = 400;
+          done(error, undefined);
+          return;
+        }
+
+        const defaultError = new Error("Bad Request");
+        // @ts-expect-error
+        defaultError.reason = error;
+        // @ts-expect-error
+        defaultError.statusCode = 400;
+        done(defaultError, undefined);
+      }
+    };
+
+    fastify.addContentTypeParser(
+      "application/activity+json",
+      { parseAs: "string" },
+      parseJson,
+    );
+
+    fastify.addContentTypeParser(
+      "application/ld+json",
+      { parseAs: "string" },
+      parseJson,
+    );
 
     fastify.get("/.well-known/host-meta", {}, async (_, reply) => {
       const response = await myPub.handleHostMeta();
