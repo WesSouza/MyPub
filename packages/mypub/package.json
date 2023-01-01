@@ -37,7 +37,10 @@
   },
   "packageManager": "pnpm@7.18.2",
   "pnpm": {},
-  "dependencies": {},
+  "dependencies": {
+    "activitypub-zod": "workspace:*",
+    "zod": "^3.20.2"
+  },
   "devDependencies": {
     "@mypub/build-utils": "workspace:*",
     "@mypub/types": "workspace:*"

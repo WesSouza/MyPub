@@ -1,4 +1,5 @@
-import { MyPubContext } from "@mypub/types";
+import { ObjectSchema } from "activitypub-zod";
+import { AsyncResult, MyPubContext } from "@mypub/types";
 
 import { Errors } from "../constants/index.js";
 import { respondWithError } from "../utils/http-response.js";
@@ -24,11 +25,6 @@ export async function actor(
   const user = await context.data.getUserByHandle(actorHandle);
   if (!user || "error" in user) {
     return respondWithError("notFound", Errors.notFound, user);
-  }
-
-  const userKeys = await context.users.getUserKeys(user.id);
-  if (!userKeys || "error" in userKeys) {
-    return respondWithError("notFound", Errors.notFound, userKeys);
   }
 
   return new Response(
@@ -112,7 +108,7 @@ export async function actor(
       publicKey: {
         id: `${user.url}#main-key`,
         owner: `${user.url}`,
-        publicKeyPem: userKeys.publicKey,
+        publicKeyPem: user.publicKey,
       },
       tag: user.tag.map((tag) => ({
         type: "Hashtag",
@@ -148,4 +144,104 @@ export async function actor(
       },
     },
   );
+}
+
+export async function syncExternalActor(urlString: string) {
+  let url: URL;
+  try {
+    url = new URL(urlString);
+  } catch (error) {
+    return { error: Errors.invalidActorUrl };
+  }
+
+  const actorResponse = await fetch(url, {
+    headers: {
+      accept: "application/activity+json",
+    },
+  });
+  const actorData = ObjectSchema.parse(await actorResponse.json());
+  if (
+    !actorData ||
+    typeof actorData !== "object" ||
+    !("inbox" in actorData) ||
+    typeof actorData.inbox !== "string" ||
+    !("preferredUsername" in actorData) ||
+    typeof actorData.preferredUsername !== "string"
+  ) {
+    return { error: Errors.invalidServerResponse };
+  }
+
+  return { error: Errors.X_notImplemented };
+}
+
+export async function follow(
+  context: MyPubContext,
+  userId: string,
+  urlString: string,
+): AsyncResult<boolean> {
+  const follower = await context.data.getUser(userId);
+  if ("error" in follower) {
+    return follower;
+  }
+
+  let url: URL;
+  try {
+    url = new URL(urlString);
+  } catch (error) {
+    return { error: Errors.invalidActorUrl };
+  }
+
+  const followedActorResponse = await fetch(url, {
+    headers: {
+      accept: "application/activity+json",
+    },
+  });
+  const followedActorData = (await followedActorResponse.json()) as unknown;
+  if (
+    !followedActorData ||
+    typeof followedActorData !== "object" ||
+    !("inbox" in followedActorData) ||
+    typeof followedActorData.inbox !== "string" ||
+    !("preferredUsername" in followedActorData) ||
+    typeof followedActorData.preferredUsername !== "string"
+  ) {
+    return { error: Errors.invalidServerResponse };
+  }
+
+  const followActionRequest = new Request(followedActorData.inbox, {
+    method: "post",
+    headers: {
+      "content-type": "application/activity+json",
+    },
+    body: JSON.stringify({
+      "@context": "https://www.w3.org/ns/activitystreams",
+      actor: follower.url,
+      id: `${follower.url}/${followedActorData.preferredUsername}@${url.hostname}/follow`,
+      object: url.toString(),
+      published: new Date().toISOString(),
+      to: url.toString(),
+      type: "Follow",
+    }),
+  });
+
+  const followActionSignedRequest = await context.users.signRequest(
+    userId,
+    followActionRequest,
+  );
+  if ("error" in followActionSignedRequest) {
+    return {
+      error: Errors.requestSigningError,
+      reason: followActionSignedRequest,
+    };
+  }
+
+  const followActionResponse = await fetch(followActionSignedRequest);
+  if (followActionResponse.status >= 300) {
+    return false;
+  }
+
+  // ToDo: upsert a user in the db for a followingUserId
+  // context.data.setUserFollowing(userId, followingUserId, "pending");
+
+  return true;
 }

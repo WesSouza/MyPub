@@ -34,8 +34,43 @@ importers:
       ts-node: 10.9.1_awa2wsr5thmg3i7jqycphctjfq
       typescript: 4.9.4
 
+  packages/activitypub-zod:
+    specifiers:
+      '@mypub/build-utils': workspace:*
+      typescript: ^4.9.4
+      zod: ^3.20.2
+    devDependencies:
+      '@mypub/build-utils': link:../build-utils
+      typescript: 4.9.4
+      zod: 3.20.2
+
   packages/build-utils:
     specifiers: {}
+
+  packages/cli-playground:
+    specifiers:
+      '@mypub/memory': workspace:*
+      '@mypub/mongodb': workspace:*
+      '@mypub/s3': workspace:*
+      '@mypub/single-user': workspace:*
+      '@mypub/types': workspace:*
+      '@types/node': ^18.11.18
+      dotenv: ^16.0.3
+      mypub: workspace:*
+      ts-node: ^10.9.1
+      typescript: ^4.9.4
+    dependencies:
+      '@mypub/memory': link:../memory
+      '@mypub/mongodb': link:../mongodb
+      '@mypub/s3': link:../s3
+      '@mypub/single-user': link:../single-user
+      dotenv: 16.0.3
+      mypub: link:../mypub
+      ts-node: 10.9.1_awa2wsr5thmg3i7jqycphctjfq
+    devDependencies:
+      '@mypub/types': link:../types
+      '@types/node': 18.11.18
+      typescript: 4.9.4
 
   packages/fastify:
     specifiers:
@@ -110,6 +145,11 @@ importers:
     specifiers:
       '@mypub/build-utils': workspace:*
       '@mypub/types': workspace:*
+      activitypub-zod: workspace:*
+      zod: ^3.20.2
+    dependencies:
+      activitypub-zod: link:../activitypub-zod
+      zod: 3.20.2
     devDependencies:
       '@mypub/build-utils': link:../build-utils
       '@mypub/types': link:../types
@@ -3551,3 +3591,6 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
     dev: true
+
+  /zod/3.20.2:
+    resolution: {integrity: sha512-1MzNQdAvO+54H+EaK5YpyEy0T+Ejo/7YLHS93G3RnYWh5gaotGHwGeN/ZO687qEDU2y4CdStQYXVHIgrUl5UVQ==}

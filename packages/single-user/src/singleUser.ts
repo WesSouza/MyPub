@@ -1,27 +1,53 @@
-import { AsyncResult, MyPubUsersModule, UserKeys } from "@mypub/types";
-import { Errors } from "mypub";
+import {
+  AsyncResult,
+  MyPubContext,
+  MyPubUsersModule,
+  UserKeys,
+} from "@mypub/types";
+import { sign, Errors } from "mypub";
 
 export function singleUser(user: {
   userId: string;
   privateKey: string;
   publicKey: string;
 }) {
-  function getUserKeys(userId: string): AsyncResult<UserKeys> {
-    if (userId !== user.userId) {
-      return Promise.resolve({ error: Errors.notFound });
+  let keyId: string | undefined;
+
+  return function withContext(context: MyPubContext): MyPubUsersModule {
+    function getUserKeys(userId: string): AsyncResult<UserKeys> {
+      if (userId !== user.userId) {
+        return Promise.resolve({ error: Errors.notFound });
+      }
+
+      return Promise.resolve({
+        privateKey: user.privateKey,
+        publicKey: user.publicKey,
+      });
     }
 
-    return Promise.resolve({
-      privateKey: user.privateKey,
-      publicKey: user.publicKey,
-    });
-  }
+    async function signRequest(
+      userId: string,
+      request: Request,
+    ): AsyncResult<Request> {
+      if (!keyId) {
+        const user = await context.data.getUser(userId);
+        if ("error" in user) {
+          return { error: Errors.notFound, reason: user };
+        }
+        keyId = `${user.url}#main-key`;
+      }
 
-  function signRequest(_: string, _1: Request): Request {
-    throw new Error("signRequest not implemented");
-  }
+      if (userId !== user.userId) {
+        throw new Error(`Unable to sign for user ${userId}: unknown user`);
+      }
 
-  return function withContext(): MyPubUsersModule {
+      return await sign(request, {
+        keyId,
+        privateKey: user.privateKey,
+        publicKey: user.publicKey,
+      });
+    }
+
     return {
       getUserKeys,
       signRequest,

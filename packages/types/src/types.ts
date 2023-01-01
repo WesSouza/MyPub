@@ -78,38 +78,55 @@ export type User = {
     profile: string | undefined;
   };
   followers: {
-    items?: UserReference[];
+    items?: { user: User; state: "following" | "pending" }[];
     total: number;
   };
   following: {
-    items?: UserReference[];
+    items?: User[];
     total: number;
   };
   content: {
     total: number;
   };
+  publicKey: string;
   created: Date;
   updated: Date;
 };
 
-export type UserReference = Pick<
-  User,
-  | "content"
-  | "created"
-  | "domain"
-  | "handle"
-  | "images"
-  | "name"
-  | "updated"
-  | "url"
-> & {
+export type UserShallow = Omit<User, "followers" | "following"> & {
   followers: Pick<User["followers"], "total">;
   following: Pick<User["following"], "total">;
+};
+
+export type MastodonApplication = {
+  name: string;
+  website: string;
 };
 
 export type UserKeys = {
   publicKey: string;
   privateKey: string;
+};
+
+export type Note = {
+  user: User;
+  application?: MastodonApplication;
+  content: string;
+  language: string;
+  visibility: "public" | "unlisted" | "private";
+  sensitive: boolean;
+  sensitiveSummary: string;
+  pinned: boolean;
+  announcements: {
+    items?: UserShallow[];
+    total: number;
+  };
+  likes: {
+    items?: UserShallow[];
+    total: number;
+  };
+  created: Date;
+  updated: Date;
 };
 
 export type Pagination =
@@ -137,11 +154,16 @@ export type MyPubDataModule = {
   getUserFollowing: (
     userId: string,
     page: Pagination,
-  ) => AsyncResult<Collection<UserReference>>;
+  ) => AsyncResult<Collection<UserShallow>>;
   getUserFollowers: (
     userId: string,
     page: Pagination,
-  ) => AsyncResult<Collection<UserReference>>;
+  ) => AsyncResult<Collection<UserShallow>>;
+  setUserFollowing: (
+    userId: string,
+    followingUserId: string,
+    state: "following" | "pending" | "not-following",
+  ) => AsyncResult<boolean>;
 };
 
 export type FileData = {
@@ -167,5 +189,5 @@ export type MyPubStorageModule = {
 
 export type MyPubUsersModule = {
   getUserKeys: (userId: string) => AsyncResult<UserKeys>;
-  signRequest: (userId: string, request: Request) => Request;
+  signRequest: (userId: string, request: Request) => AsyncResult<Request>;
 };

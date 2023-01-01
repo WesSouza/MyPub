@@ -3,7 +3,7 @@ import type {
   MyPubConfig,
   MyPubInstanceData,
 } from "@mypub/types";
-import { actor } from "./activity-pub/actor.js";
+import { actor, follow } from "./activity-pub/actor.js";
 
 import { Errors } from "./constants/Errors.js";
 import { MyPubContext } from "./MyPubContext.js";
@@ -19,6 +19,10 @@ export class MyPub {
     this.context = new MyPubContext(config);
     this.instance = this.context.instance;
   }
+
+  followActor = (userId: string, url: string) => {
+    return follow(this.context, userId, url);
+  };
 
   handleHostMeta = () => {
     return hostMeta(this.context);
