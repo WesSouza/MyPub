@@ -22,6 +22,12 @@ export default [
       },
     ],
     external: (id) => !/^[./]/.test(id),
+    onwarn: (warning, defaultHandler) => {
+      if (warning.code === "CIRCULAR_DEPENDENCY") {
+        return;
+      }
+      defaultHandler(warning);
+    },
     plugins: [
       esbuild(),
       typescript({
