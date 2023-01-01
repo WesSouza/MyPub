@@ -1,0 +1,38 @@
+{
+  "name": "activitypub-zod",
+  "version": "0.0.2",
+  "type": "module",
+  "description": "ActivityPub Zod Validschemes",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    "import": "./dist/index.js",
+    "require": "./dist/index.cjs"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "rollup -c",
+    "check": "pnpm run check:types && pnpm run lint",
+    "check:types": "tsc --noEmit",
+    "dev": "rollup -c -w",
+    "lint": "eslint --cache --cache-location \".cache/eslintcache\" src && prettier --check src"
+  },
+  "engines": {
+    "node": ">=18",
+    "pnpm": ">=7"
+  },
+  "packageManager": "pnpm@7.18.2",
+  "pnpm": {},
+  "peerDependencies": {
+    "zod": ">=3"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@mypub/build-utils": "workspace:*",
+    "typescript": "^4.9.4",
+    "zod": "^3.20.2"
+  }
+}
