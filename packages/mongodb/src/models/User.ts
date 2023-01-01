@@ -1,29 +1,7 @@
-import { User, UserReference } from "@mypub/types";
+import { User } from "@mypub/types";
 import mongoose from "mongoose";
 
 const { Schema } = mongoose;
-
-const UserReferenceSchema = new Schema<UserReference>({
-  url: { type: String, required: true, unique: true },
-  handle: { type: String, required: true },
-  domain: { type: String, required: true },
-  name: { type: String, required: true },
-  images: {
-    cover: { type: String },
-    profile: { type: String },
-  },
-  followers: {
-    total: { type: Number, required: true },
-  },
-  following: {
-    total: { type: Number, required: true },
-  },
-  content: {
-    total: { type: Number, required: true },
-  },
-  created: { type: Date, required: true },
-  updated: { type: Date, required: true },
-});
 
 const UserSchema = new Schema<User>({
   url: { type: String, required: true, unique: true },
@@ -44,14 +22,23 @@ const UserSchema = new Schema<User>({
   },
   followers: {
     items: {
-      type: [UserReferenceSchema],
+      type: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
       default: undefined,
     },
     total: { type: Number, required: true },
   },
   following: {
     items: {
-      type: [UserReferenceSchema],
+      type: [
+        {
+          user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+          state: {
+            type: String,
+            enum: ["following", "pending"],
+            required: true,
+          },
+        },
+      ],
       default: undefined,
     },
     total: { type: Number, required: true },
@@ -59,6 +46,7 @@ const UserSchema = new Schema<User>({
   content: {
     total: { type: Number, required: true },
   },
+  publicKey: { type: String, required: true },
   created: { type: Date, required: true },
   updated: { type: Date, required: true },
 });
