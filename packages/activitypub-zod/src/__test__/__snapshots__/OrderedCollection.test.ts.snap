@@ -1,0 +1,263 @@
+// Vitest Snapshot v1
+
+exports[`OrderedCollection > parses https://mastodon.social/users/gargron/outbox 1`] = `
+{
+  "first": "https://mastodon.social/users/Gargron/outbox?page=true",
+  "id": "https://mastodon.social/users/Gargron/outbox",
+  "last": "https://mastodon.social/users/Gargron/outbox?min_id=0&page=true",
+  "totalItems": 72978,
+  "type": "OrderedCollection",
+}
+`;
+
+exports[`OrderedCollectionPage > parses https://mastodon.social/users/gargron/outbox?page=true 1`] = `
+{
+  "id": "https://mastodon.social/users/Gargron/outbox?page=true",
+  "next": "https://mastodon.social/users/Gargron/outbox?max_id=109599392103350332&page=true",
+  "orderedItems": [
+    {
+      "cc": [
+        "https://mastodon.social/users/DeRochier",
+        "https://mastodon.social/users/Gargron/followers",
+      ],
+      "id": "https://mastodon.social/users/Gargron/statuses/109613188457653027/activity",
+      "published": "2023-01-01T09:15:21Z",
+      "to": [
+        "https://www.w3.org/ns/activitystreams#Public",
+      ],
+      "type": "Announce",
+    },
+    {
+      "cc": [
+        "https://mastodon.green/users/timsmalley",
+        "https://mastodon.social/users/Gargron/followers",
+      ],
+      "id": "https://mastodon.social/users/Gargron/statuses/109611427943713605/activity",
+      "published": "2023-01-01T01:47:37Z",
+      "to": [
+        "https://www.w3.org/ns/activitystreams#Public",
+      ],
+      "type": "Announce",
+    },
+    {
+      "cc": [
+        "https://mastodon.social/users/Gargron/followers",
+      ],
+      "id": "https://mastodon.social/users/Gargron/statuses/109610768945818122/activity",
+      "published": "2022-12-31T23:00:02Z",
+      "to": [
+        "https://www.w3.org/ns/activitystreams#Public",
+      ],
+      "type": "Create",
+    },
+    {
+      "cc": [
+        "https://mastodon.social/users/Gargron/followers",
+        "https://cyberplace.social/users/GossiTheDog",
+        "https://masthead.social/users/organizingpower",
+      ],
+      "id": "https://mastodon.social/users/Gargron/statuses/109610171952313705/activity",
+      "published": "2022-12-31T20:28:12Z",
+      "to": [
+        "https://www.w3.org/ns/activitystreams#Public",
+      ],
+      "type": "Create",
+    },
+    {
+      "cc": [
+        "https://mastodon.social/users/Gargron/followers",
+      ],
+      "id": "https://mastodon.social/users/Gargron/statuses/109610085134063145/activity",
+      "published": "2022-12-31T20:06:08Z",
+      "to": [
+        "https://www.w3.org/ns/activitystreams#Public",
+      ],
+      "type": "Create",
+    },
+    {
+      "cc": [
+        "https://mastodon.social/users/Gargron/followers",
+        "https://infosec.exchange/users/jerry",
+      ],
+      "id": "https://mastodon.social/users/Gargron/statuses/109609868272928398/activity",
+      "published": "2022-12-31T19:10:59Z",
+      "to": [
+        "https://www.w3.org/ns/activitystreams#Public",
+      ],
+      "type": "Create",
+    },
+    {
+      "cc": [
+        "https://www.w3.org/ns/activitystreams#Public",
+        "https://masthead.social/users/organizingpower",
+        "https://cyberplace.social/users/GossiTheDog",
+      ],
+      "id": "https://mastodon.social/users/Gargron/statuses/109609686094420781/activity",
+      "published": "2022-12-31T18:24:39Z",
+      "to": [
+        "https://mastodon.social/users/Gargron/followers",
+      ],
+      "type": "Create",
+    },
+    {
+      "cc": [
+        "https://c.im/users/jamesgunn",
+        "https://mastodon.social/users/Gargron/followers",
+      ],
+      "id": "https://mastodon.social/users/Gargron/statuses/109609648929842424/activity",
+      "published": "2022-12-31T18:15:12Z",
+      "to": [
+        "https://www.w3.org/ns/activitystreams#Public",
+      ],
+      "type": "Announce",
+    },
+    {
+      "cc": [
+        "https://mastodon.social/users/Gargron/followers",
+        "https://koyu.space/users/alceawisteria",
+      ],
+      "id": "https://mastodon.social/users/Gargron/statuses/109609391272895601/activity",
+      "published": "2022-12-31T17:09:40Z",
+      "to": [
+        "https://www.w3.org/ns/activitystreams#Public",
+      ],
+      "type": "Create",
+    },
+    {
+      "cc": [
+        "https://mastodon.social/users/Gargron/followers",
+        "https://mastodon.social/users/atomicpoet",
+      ],
+      "id": "https://mastodon.social/users/Gargron/statuses/109606680467321605/activity",
+      "published": "2022-12-31T05:40:17Z",
+      "to": [
+        "https://www.w3.org/ns/activitystreams#Public",
+      ],
+      "type": "Create",
+    },
+    {
+      "cc": [
+        "https://mastodon.social/users/caseynewton",
+        "https://mastodon.social/users/Gargron/followers",
+      ],
+      "id": "https://mastodon.social/users/Gargron/statuses/109606649348952884/activity",
+      "published": "2022-12-31T05:32:22Z",
+      "to": [
+        "https://www.w3.org/ns/activitystreams#Public",
+      ],
+      "type": "Announce",
+    },
+    {
+      "cc": [
+        "https://mastodon.social/users/drskyskull",
+        "https://mastodon.social/users/Gargron/followers",
+      ],
+      "id": "https://mastodon.social/users/Gargron/statuses/109604608301254768/activity",
+      "published": "2022-12-30T20:53:18Z",
+      "to": [
+        "https://www.w3.org/ns/activitystreams#Public",
+      ],
+      "type": "Announce",
+    },
+    {
+      "cc": [
+        "https://universeodon.com/users/christianlament",
+        "https://mastodon.social/users/Gargron/followers",
+      ],
+      "id": "https://mastodon.social/users/Gargron/statuses/109604527810954600/activity",
+      "published": "2022-12-30T20:32:50Z",
+      "to": [
+        "https://www.w3.org/ns/activitystreams#Public",
+      ],
+      "type": "Announce",
+    },
+    {
+      "cc": [
+        "https://www.w3.org/ns/activitystreams#Public",
+        "https://mstdn.social/users/anggiar",
+        "https://hachyderm.io/users/NireBryce",
+      ],
+      "id": "https://mastodon.social/users/Gargron/statuses/109602128391184561/activity",
+      "published": "2022-12-30T10:22:37Z",
+      "to": [
+        "https://mastodon.social/users/Gargron/followers",
+      ],
+      "type": "Create",
+    },
+    {
+      "cc": [
+        "https://mastodon.social/users/Gargron/followers",
+        "https://universe.feliver.se/users/feli",
+      ],
+      "id": "https://mastodon.social/users/Gargron/statuses/109599771962878292/activity",
+      "published": "2022-12-30T00:23:21Z",
+      "to": [
+        "https://www.w3.org/ns/activitystreams#Public",
+      ],
+      "type": "Create",
+    },
+    {
+      "cc": [
+        "https://mastodon.social/users/Gargron/followers",
+        "https://nerdculture.de/users/abbadon",
+      ],
+      "id": "https://mastodon.social/users/Gargron/statuses/109599678143918005/activity",
+      "published": "2022-12-29T23:59:30Z",
+      "to": [
+        "https://www.w3.org/ns/activitystreams#Public",
+      ],
+      "type": "Create",
+    },
+    {
+      "cc": [
+        "https://mastodon.social/users/Gargron/followers",
+        "https://masto.ai/users/ForeverLouiseBrooks",
+      ],
+      "id": "https://mastodon.social/users/Gargron/statuses/109599601018973773/activity",
+      "published": "2022-12-29T23:39:53Z",
+      "to": [
+        "https://www.w3.org/ns/activitystreams#Public",
+      ],
+      "type": "Create",
+    },
+    {
+      "cc": [
+        "https://mastodon.social/users/Gargron/followers",
+      ],
+      "id": "https://mastodon.social/users/Gargron/statuses/109599424355912280/activity",
+      "published": "2022-12-29T22:54:57Z",
+      "to": [
+        "https://www.w3.org/ns/activitystreams#Public",
+      ],
+      "type": "Create",
+    },
+    {
+      "cc": [
+        "https://mastodon.social/users/Gargron/followers",
+        "https://mastodon.social/users/atomicpoet",
+      ],
+      "id": "https://mastodon.social/users/Gargron/statuses/109599412622600265/activity",
+      "published": "2022-12-29T22:51:58Z",
+      "to": [
+        "https://www.w3.org/ns/activitystreams#Public",
+      ],
+      "type": "Create",
+    },
+    {
+      "cc": [
+        "https://mastodon.social/users/Gargron/followers",
+        "https://mastodon.social/users/atomicpoet",
+      ],
+      "id": "https://mastodon.social/users/Gargron/statuses/109599392103350332/activity",
+      "published": "2022-12-29T22:46:45Z",
+      "to": [
+        "https://www.w3.org/ns/activitystreams#Public",
+      ],
+      "type": "Create",
+    },
+  ],
+  "partOf": "https://mastodon.social/users/Gargron/outbox",
+  "prev": "https://mastodon.social/users/Gargron/outbox?min_id=109613188457653027&page=true",
+  "type": "OrderedCollectionPage",
+}
+`;

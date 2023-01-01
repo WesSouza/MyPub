@@ -1,0 +1,57 @@
+// Vitest Snapshot v1
+
+exports[`Actors > parses https://mastodon.social/users/gargron 1`] = `
+{
+  "attachment": [
+    {
+      "name": "Patreon",
+      "type": "PropertyValue",
+      "value": "<a href=\\"https://www.patreon.com/mastodon\\" target=\\"_blank\\" rel=\\"nofollow noopener noreferrer me\\"><span class=\\"invisible\\">https://www.</span><span class=\\"\\">patreon.com/mastodon</span><span class=\\"invisible\\"></span></a>",
+    },
+  ],
+  "devices": "https://mastodon.social/users/Gargron/collections/devices",
+  "discoverable": true,
+  "endpoints": {
+    "sharedInbox": "https://mastodon.social/inbox",
+  },
+  "featured": "https://mastodon.social/users/Gargron/collections/featured",
+  "featuredTags": "https://mastodon.social/users/Gargron/collections/tags",
+  "followers": "https://mastodon.social/users/Gargron/followers",
+  "following": "https://mastodon.social/users/Gargron/following",
+  "icon": {
+    "mediaType": "image/jpeg",
+    "type": "Image",
+    "url": "https://files.mastodon.social/accounts/avatars/000/000/001/original/dc4286ceb8fab734.jpg",
+  },
+  "id": "https://mastodon.social/users/Gargron",
+  "image": {
+    "mediaType": "image/jpeg",
+    "type": "Image",
+    "url": "https://files.mastodon.social/accounts/headers/000/000/001/original/3b91c9965d00888b.jpeg",
+  },
+  "inbox": "https://mastodon.social/users/Gargron/inbox",
+  "manuallyApprovesFollowers": false,
+  "name": "Eugen Rochko",
+  "outbox": "https://mastodon.social/users/Gargron/outbox",
+  "preferredUsername": "Gargron",
+  "publicKey": {
+    "id": "https://mastodon.social/users/Gargron#main-key",
+    "owner": "https://mastodon.social/users/Gargron",
+    "publicKeyPem": "-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvXc4vkECU2/CeuSo1wtn
+Foim94Ne1jBMYxTZ9wm2YTdJq1oiZKif06I2fOqDzY/4q/S9uccrE9Bkajv1dnkO
+Vm31QjWlhVpSKynVxEWjVBO5Ienue8gND0xvHIuXf87o61poqjEoepvsQFElA5ym
+ovljWGSA/jpj7ozygUZhCXtaS2W5AD5tnBQUpcO0lhItYPYTjnmzcc4y2NbJV8hz
+2s2G8qKv8fyimE23gY1XrPJg+cRF+g4PqFXujjlJ7MihD9oqtLGxbu7o1cifTn3x
+BfIdPythWu5b4cujNsB3m3awJjVmx+MHQ9SugkSIYXV0Ina77cTNS0M2PYiH1PFR
+TwIDAQAB
+-----END PUBLIC KEY-----
+",
+  },
+  "published": "2016-03-16T00:00:00Z",
+  "summary": "<p>Founder, CEO and lead developer <span class=\\"h-card\\"><a href=\\"https://mastodon.social/@Mastodon\\" class=\\"u-url mention\\">@<span>Mastodon</span></a></span>, Germany.</p>",
+  "tag": [],
+  "type": "Person",
+  "url": "https://mastodon.social/@Gargron",
+}
+`;

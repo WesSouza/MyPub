@@ -10,6 +10,9 @@ node_modules/
 .rollup.cache
 *.tsbuildinfo
 
+# Test coverage
+coverage/
+
 # logs
 npm-debug.log*
 yarn-debug.log*

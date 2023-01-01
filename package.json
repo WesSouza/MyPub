@@ -5,7 +5,9 @@
   "scripts": {
     "build": "pnpm run -r build",
     "check": "pnpm run -r check",
-    "dev": "pnpm run -r --parallel --stream dev"
+    "dev": "pnpm run -r --parallel --stream dev",
+    "test": "pnpm run -r test",
+    "test:coverage": "pnpm run -r test:coverage"
   },
   "workspaces": [
     "packages/*"
