@@ -8,5 +8,5 @@
     "tsBuildInfoFile": ".cache/tsbuildinfo"
   },
   "include": ["src/**/*.ts"],
-  "references": [{ "path": "../types" }]
+  "references": [{ "path": "../activitypub-zod" }, { "path": "../types" }]
 }

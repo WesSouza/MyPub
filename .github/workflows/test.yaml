@@ -1,4 +1,4 @@
-name: Code Check
+name: Test
 
 on:
   pull_request:
@@ -6,7 +6,7 @@ on:
 
 jobs:
   check:
-    name: pnpm check
+    name: pnpm test
     runs-on: ubuntu-latest
 
     steps:
@@ -24,8 +24,8 @@ jobs:
           run_install: |
             - args: [--frozen-lockfile, --strict-peer-dependencies]
 
-      - name: Build
+      - name: Run Build
         run: pnpm run build
 
-      - name: Run Checks
-        run: pnpm run check
+      - name: Run Tests
+        run: pnpm run test:coverage
