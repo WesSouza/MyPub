@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { Activity, ActivitySchema } from "./Activities.js";
+import { Actor, ActorSchema } from "./Actors.js";
 import { Collection, CollectionSchema } from "./Collection.js";
 import { dateValue, durationValue, UrlValue, urlValue } from "./common.js";
 import { Link, LinkSchema } from "./Link.js";
@@ -9,26 +11,26 @@ import {
 } from "./OrderedCollection.js";
 
 const ShallowObjectSchema = z.object({
-  content: z.string().optional(),
-  contentMap: z.record(z.string()).optional(),
-  duration: durationValue.optional(),
-  endTime: dateValue.optional(),
-  id: z.string().optional(),
-  mediaType: z.string().optional(),
-  name: z.string().optional(),
-  nameMap: z.record(z.string()).optional(),
-  published: dateValue.optional(),
-  startTime: dateValue.optional(),
+  content: z.string().nullish(),
+  contentMap: z.record(z.string()).nullish(),
+  duration: durationValue.nullish(),
+  endTime: dateValue.nullish(),
+  id: z.string().nullish(),
+  mediaType: z.string().nullish(),
+  name: z.string().nullish(),
+  nameMap: z.record(z.string()).nullish(),
+  published: dateValue.nullish(),
+  startTime: dateValue.nullish(),
   source: z
     .object({
       content: z.string(),
-      mediaType: z.string().optional(),
+      mediaType: z.string().nullish(),
     })
-    .optional(),
-  summary: z.string().optional(),
-  summaryMap: z.record(z.string()).optional(),
+    .nullish(),
+  summary: z.string().nullish(),
+  summaryMap: z.record(z.string()).nullish(),
   type: z.string(),
-  updated: dateValue.optional(),
+  updated: dateValue.nullish(),
 });
 
 type LinkOrArray = UrlValue | Link | (UrlValue | Link)[];
@@ -39,25 +41,25 @@ export type ObjectOrLinkOrArray = ObjectOrLink | ObjectOrLink[];
 type CollectionOrLink = UrlValue | Link | Collection | OrderedCollection;
 
 export type ObjectType = z.infer<typeof ShallowObjectSchema> & {
-  attachment?: ObjectOrLinkOrArray;
-  attributedTo?: ObjectOrLinkOrArray;
-  audience?: ObjectOrLinkOrArray;
-  bcc?: ObjectOrLinkOrArray;
-  bto?: ObjectOrLinkOrArray;
-  cc?: ObjectOrLinkOrArray;
-  context?: ObjectOrLinkOrArray;
-  generator?: ObjectOrLinkOrArray;
-  icon?: LinkOrImageOrArray;
-  image?: LinkOrImageOrArray;
-  inReplyTo?: ObjectOrLinkOrArray;
-  likes?: CollectionOrLink;
-  location?: ObjectOrLinkOrArray;
-  preview?: ObjectOrLink;
-  replies?: CollectionOrLink;
-  shares?: CollectionOrLink;
-  tag?: ObjectOrLinkOrArray;
-  to?: ObjectOrLinkOrArray;
-  url?: LinkOrArray;
+  attachment?: ObjectOrLinkOrArray | null | undefined;
+  attributedTo?: ObjectOrLinkOrArray | null | undefined;
+  audience?: ObjectOrLinkOrArray | null | undefined;
+  bcc?: ObjectOrLinkOrArray | null | undefined;
+  bto?: ObjectOrLinkOrArray | null | undefined;
+  cc?: ObjectOrLinkOrArray | null | undefined;
+  context?: ObjectOrLinkOrArray | null | undefined;
+  generator?: ObjectOrLinkOrArray | null | undefined;
+  icon?: LinkOrImageOrArray | null | undefined;
+  image?: LinkOrImageOrArray | null | undefined;
+  inReplyTo?: ObjectOrLinkOrArray | null | undefined;
+  likes?: CollectionOrLink | null | undefined;
+  location?: ObjectOrLinkOrArray | null | undefined;
+  preview?: ObjectOrLink | null | undefined;
+  replies?: CollectionOrLink | null | undefined;
+  shares?: CollectionOrLink | null | undefined;
+  tag?: ObjectOrLinkOrArray | null | undefined;
+  to?: ObjectOrLinkOrArray | null | undefined;
+  url?: LinkOrArray | null | undefined;
 };
 
 export const lazyObjectSchema = () => {
@@ -81,25 +83,25 @@ export const lazyObjectSchema = () => {
     z.array(z.union([urlValue, LinkSchema, ImageSchema])),
   ]);
   return ShallowObjectSchema.extend({
-    attachment: objectOrLinkOrArray.optional(),
-    attributedTo: objectOrLinkOrArray.optional(),
-    audience: objectOrLinkOrArray.optional(),
-    bcc: objectOrLinkOrArray.optional(),
-    bto: objectOrLinkOrArray.optional(),
-    cc: objectOrLinkOrArray.optional(),
-    context: objectOrLinkOrArray.optional(),
-    generator: objectOrLinkOrArray.optional(),
-    icon: imageOrLinkOrArray.optional(),
-    image: imageOrLinkOrArray.optional(),
-    inReplyTo: objectOrLinkOrArray.optional(),
-    likes: collectionOrLink.optional(),
-    location: objectOrLinkOrArray.optional(),
-    preview: objectOrLink.optional(),
-    replies: collectionOrLink.optional(),
-    shares: collectionOrLink.optional(),
-    tag: objectOrLinkOrArray.optional(),
-    to: objectOrLinkOrArray.optional(),
-    url: linkOrArray.optional(),
+    attachment: objectOrLinkOrArray.nullish(),
+    attributedTo: objectOrLinkOrArray.nullish(),
+    audience: objectOrLinkOrArray.nullish(),
+    bcc: objectOrLinkOrArray.nullish(),
+    bto: objectOrLinkOrArray.nullish(),
+    cc: objectOrLinkOrArray.nullish(),
+    context: objectOrLinkOrArray.nullish(),
+    generator: objectOrLinkOrArray.nullish(),
+    icon: imageOrLinkOrArray.nullish(),
+    image: imageOrLinkOrArray.nullish(),
+    inReplyTo: objectOrLinkOrArray.nullish(),
+    likes: collectionOrLink.nullish(),
+    location: objectOrLinkOrArray.nullish(),
+    preview: objectOrLink.nullish(),
+    replies: collectionOrLink.nullish(),
+    shares: collectionOrLink.nullish(),
+    tag: objectOrLinkOrArray.nullish(),
+    to: objectOrLinkOrArray.nullish(),
+    url: linkOrArray.nullish(),
   });
 };
 
@@ -296,3 +298,11 @@ export const ObjectSchema: z.ZodType<
     lazyObjectSchema(),
   ]),
 );
+
+export type AnyObject = Activity | Actor | ObjectOrLink;
+export type AnyObjectOrArray = AnyObject | AnyObject[];
+
+export const anyObject = () =>
+  z.union([ActivitySchema, ActorSchema, urlValue, LinkSchema, ObjectSchema]);
+export const anyObjectOrArray = () =>
+  z.union([anyObject(), z.array(anyObject())]);

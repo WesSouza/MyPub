@@ -5,22 +5,22 @@ import { ContextSchema } from "./Context.js";
 import { ObjectSchema, ObjectType } from "./Objects.js";
 
 export const ShallowLinkSchema = ContextSchema.extend({
-  href: urlValue.optional(),
-  rel: z.union([z.string(), z.array(z.string())]).optional(),
-  mediaType: z.string().optional(),
-  name: z.string().optional(),
-  nameMap: z.record(z.string()).optional(),
-  hreflang: z.string().optional(),
-  height: z.number().positive().optional(),
-  width: z.number().positive().optional(),
+  href: urlValue.nullish(),
+  rel: z.union([z.string(), z.array(z.string())]).nullish(),
+  mediaType: z.string().nullish(),
+  name: z.string().nullish(),
+  nameMap: z.record(z.string()).nullish(),
+  hreflang: z.string().nullish(),
+  height: z.number().positive().nullish(),
+  width: z.number().positive().nullish(),
 });
 
 export type Link = z.infer<typeof ShallowLinkSchema> & {
-  preview?: string | Link | ObjectType;
+  preview?: string | Link | ObjectType | null | undefined;
 };
 
 export const LinkSchema: z.ZodType<Link> = z.lazy(() =>
   ShallowLinkSchema.extend({
-    preview: z.union([urlValue, LinkSchema, ObjectSchema]).optional(),
+    preview: z.union([urlValue, LinkSchema, ObjectSchema]).nullish(),
   }),
 );

@@ -6,28 +6,34 @@ import { lazyObjectSchema, ObjectType } from "./Objects.js";
 export type Actor = Omit<ObjectType, "id" | "type"> & {
   id: string;
   type: "Application" | "Group" | "Organization" | "Person" | "Service";
-  inbox?: UrlValue;
-  outbox?: UrlValue;
-  endpoints?: {
-    sharedInbox?: UrlValue;
-  };
-  followers?: UrlValue;
-  following?: UrlValue;
-  preferredUsername?: string;
+  inbox?: UrlValue | null | undefined;
+  outbox?: UrlValue | null | undefined;
+  endpoints?:
+    | {
+        sharedInbox?: UrlValue | null | undefined;
+      }
+    | null
+    | undefined;
+  followers?: UrlValue | null | undefined;
+  following?: UrlValue | null | undefined;
+  preferredUsername?: string | null | undefined;
 
   // Mastodon
-  devices?: UrlValue;
-  discoverable?: boolean;
-  featured?: UrlValue;
-  featuredTags?: UrlValue;
-  manuallyApprovesFollowers?: boolean;
-  published?: DateValue;
+  devices?: UrlValue | null | undefined;
+  discoverable?: boolean | null | undefined;
+  featured?: UrlValue | null | undefined;
+  featuredTags?: UrlValue | null | undefined;
+  manuallyApprovesFollowers?: boolean | null | undefined;
+  published?: DateValue | null | undefined;
 
-  publicKey?: {
-    id: string;
-    owner: string;
-    publicKeyPem: string;
-  };
+  publicKey?:
+    | {
+        id: string;
+        owner: string;
+        publicKeyPem: string;
+      }
+    | null
+    | undefined;
 };
 
 export const lazyActor = () =>
@@ -47,20 +53,20 @@ export const lazyActor = () =>
       outbox: urlValue,
       endpoints: z
         .object({
-          sharedInbox: urlValue.optional(),
+          sharedInbox: urlValue.nullish(),
         })
-        .optional(),
-      followers: urlValue.optional(),
-      following: urlValue.optional(),
-      preferredUsername: z.string().optional(),
+        .nullish(),
+      followers: urlValue.nullish(),
+      following: urlValue.nullish(),
+      preferredUsername: z.string().nullish(),
 
       // Mastodon
-      devices: urlValue.optional(),
-      discoverable: z.boolean().optional(),
-      featured: urlValue.optional(),
-      featuredTags: urlValue.optional(),
-      manuallyApprovesFollowers: z.boolean().optional(),
-      published: dateValue.optional(),
+      devices: urlValue.nullish(),
+      discoverable: z.boolean().nullish(),
+      featured: urlValue.nullish(),
+      featuredTags: urlValue.nullish(),
+      manuallyApprovesFollowers: z.boolean().nullish(),
+      published: dateValue.nullish(),
 
       // Security
       publicKey: z
@@ -69,7 +75,7 @@ export const lazyActor = () =>
           owner: z.string(),
           publicKeyPem: z.string(),
         })
-        .optional(),
+        .nullish(),
     });
 
 export const ActorSchema: z.ZodType<Actor> = z.lazy(lazyActor);

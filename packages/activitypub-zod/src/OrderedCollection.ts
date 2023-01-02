@@ -3,34 +3,37 @@ import { z } from "zod";
 import { urlValue, UrlValue } from "./common.js";
 import { Link, LinkSchema } from "./Link.js";
 import {
+  anyObject,
+  AnyObject,
   lazyObjectSchema,
-  ObjectOrLink,
-  ObjectSchema,
   ObjectType,
 } from "./Objects.js";
 
-export type OrderedCollection<T = ObjectOrLink> = Omit<ObjectType, "type"> & {
+export type OrderedCollection<T = AnyObject> = Omit<ObjectType, "type"> & {
   type: "OrderedCollection";
-  current?: UrlValue | Link;
-  first?: UrlValue | Link;
-  last?: UrlValue | Link;
-  orderedItems?: T[];
-  totalItems?: number;
+  current?: OrderedCollectionPage | UrlValue | Link | null | undefined;
+  first?: OrderedCollectionPage | UrlValue | Link | null | undefined;
+  last?: OrderedCollectionPage | UrlValue | Link | null | undefined;
+  orderedItems?: T[] | null | undefined;
+  totalItems?: number | null | undefined;
 };
 
-export const lazyOrderedCollectionSchema = (
-  of: z.ZodTypeAny = ObjectSchema,
-) => {
-  const urlOrLink = z.union([urlValue, LinkSchema]);
+export const lazyOrderedCollectionSchema = (of?: z.ZodTypeAny) => {
+  of ??= anyObject();
+  const orderedCollectionPageOrLink = z.union([
+    urlValue,
+    LinkSchema,
+    OrderedCollectionPageSchema,
+  ]);
   return lazyObjectSchema()
     .omit({ type: true })
     .extend({
       type: z.literal("OrderedCollection"),
-      current: urlOrLink.optional(),
-      first: urlOrLink.optional(),
-      last: urlOrLink.optional(),
-      orderedItems: z.array(z.union([urlValue, LinkSchema, of])).optional(),
-      totalItems: z.number().positive().optional(),
+      current: orderedCollectionPageOrLink.nullish(),
+      first: orderedCollectionPageOrLink.nullish(),
+      last: orderedCollectionPageOrLink.nullish(),
+      orderedItems: z.array(of).nullish(),
+      totalItems: z.number().positive().nullish(),
     });
 };
 
@@ -38,28 +41,28 @@ export const OrderedCollectionSchema: z.ZodType<OrderedCollection> = z.lazy(
   lazyOrderedCollectionSchema,
 );
 
-export type OrderedCollectionPage<T = ObjectOrLink> = Omit<
-  OrderedCollection<T>,
-  "type"
-> & {
+export type OrderedCollectionPage<T = AnyObject> = {
   type: "OrderedCollectionPage";
-  partOf?: UrlValue | Link;
-  next?: UrlValue | Link;
-  prev?: UrlValue | Link;
-  startIndex?: number;
+  current?: OrderedCollectionPage | UrlValue | Link | null | undefined;
+  first?: OrderedCollectionPage | UrlValue | Link | null | undefined;
+  items?: T[] | null | undefined;
+  last?: OrderedCollectionPage | UrlValue | Link | null | undefined;
+  next?: UrlValue | Link | null | undefined;
+  partOf?: UrlValue | Link | null | undefined;
+  prev?: UrlValue | Link | null | undefined;
+  startIndex?: number | null | undefined;
+  totalItems?: number | null | undefined;
 };
 
-export const lazyOrderedCollectionPageSchema = (
-  of: z.ZodTypeAny = ObjectSchema,
-) => {
+export const lazyOrderedCollectionPageSchema = (of?: z.ZodTypeAny) => {
   const urlOrLink = z.union([urlValue, LinkSchema]);
   return lazyOrderedCollectionSchema(of)
     .omit({ type: true })
     .extend({
       type: z.literal("OrderedCollectionPage"),
-      partOf: urlOrLink.optional(),
-      next: urlOrLink.optional(),
-      prev: urlOrLink.optional(),
+      partOf: urlOrLink.nullish(),
+      next: urlOrLink.nullish(),
+      prev: urlOrLink.nullish(),
       startIndex: z.number().positive().optional(),
     });
 };

@@ -1,13 +1,14 @@
 import { z } from "zod";
-
 import { ActorSchema } from "./Actors.js";
-import { dateValue, DateValue, UrlValue, urlValue } from "./common.js";
+
+import { dateValue, DateValue, urlValue } from "./common.js";
 import { LinkSchema } from "./Link.js";
 
 import {
+  anyObjectOrArray,
+  AnyObjectOrArray,
   lazyObjectSchema,
   ObjectOrLink,
-  ObjectOrLinkOrArray,
   ObjectSchema,
   ObjectType,
 } from "./Objects.js";
@@ -39,19 +40,22 @@ type ActivityBase = Omit<ObjectType, "type"> & {
     | "Undo"
     | "Update"
     | "View";
-  actor?: ObjectOrLinkOrArray;
-  instrument?: ObjectOrLinkOrArray;
-  object?: UrlValue | ObjectType | (UrlValue | ObjectType)[];
-  origin?: ObjectOrLinkOrArray;
-  result?: ObjectOrLinkOrArray;
-  target?: ObjectOrLinkOrArray;
+  actor?: AnyObjectOrArray | null | undefined;
+  instrument?: AnyObjectOrArray | null | undefined;
+  object?: AnyObjectOrArray | null | undefined;
+  origin?: AnyObjectOrArray | null | undefined;
+  result?: AnyObjectOrArray | null | undefined;
+  target?: AnyObjectOrArray | null | undefined;
 };
 
 const lazyActivitySchema = () => {
-  const object = z.union([urlValue, ObjectSchema]);
+  const object = z.union([urlValue, ActivitySchema, ActorSchema, ObjectSchema]);
   const objectOrArray = z.union([object, z.array(object)]);
   const objectOrLink = z.union([urlValue, LinkSchema, ObjectSchema]);
   const objectOrLinkOrArray = z.union([objectOrLink, z.array(objectOrLink)]);
+  const actorOrLink = z.union([urlValue, LinkSchema, ActorSchema]);
+  const actorOrLinkOrArray = z.union([actorOrLink, z.array(actorOrLink)]);
+
   return lazyObjectSchema()
     .omit({ type: true })
     .extend({
@@ -82,12 +86,12 @@ const lazyActivitySchema = () => {
         "Update",
         "View",
       ]),
-      actor: z.union([ActorSchema, z.array(ActorSchema)]).optional(),
-      instrument: objectOrArray.optional(),
-      object: objectOrArray.optional(),
-      origin: objectOrArray.optional(),
-      result: objectOrArray.optional(),
-      target: objectOrLinkOrArray.optional(),
+      actor: actorOrLinkOrArray.nullish(),
+      instrument: objectOrArray.nullish(),
+      object: anyObjectOrArray().nullish(),
+      origin: objectOrArray.nullish(),
+      result: objectOrArray.nullish(),
+      target: objectOrLinkOrArray.nullish(),
     });
 };
 
@@ -107,7 +111,7 @@ export const IntransitiveActivitySchema: z.ZodType<IntransitiveActivity> =
 
 export type Question = Omit<ObjectType, "type"> & {
   type: "Question";
-  closed?: DateValue | boolean;
+  closed?: DateValue | boolean | null | undefined;
 } & (
     | { anyOf: ObjectOrLink[]; oneOf: never }
     | { anyOf: never; oneOf: ObjectOrLink[] }
@@ -119,7 +123,7 @@ export const lazyQuestion = () => {
     .omit({ type: true })
     .extend({
       type: z.literal("Question"),
-      closed: z.union([dateValue, z.boolean()]).optional(),
+      closed: z.union([dateValue, z.boolean()]).nullish(),
     })
     .and(
       z.union([
