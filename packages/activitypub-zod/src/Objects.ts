@@ -300,6 +300,7 @@ export const ObjectSchema: z.ZodType<
 );
 
 export type AnyObject = Activity | Actor | ObjectOrLink;
+export type AnyObjectNotString = Activity | Actor | ObjectType | Link;
 export type AnyObjectOrArray = AnyObject | AnyObject[];
 
 export const anyObject = () =>

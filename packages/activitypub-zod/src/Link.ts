@@ -5,6 +5,7 @@ import { ContextSchema } from "./Context.js";
 import { ObjectSchema, ObjectType } from "./Objects.js";
 
 export const ShallowLinkSchema = ContextSchema.extend({
+  type: z.literal("Link"),
   href: urlValue.nullish(),
   rel: z.union([z.string(), z.array(z.string())]).nullish(),
   mediaType: z.string().nullish(),

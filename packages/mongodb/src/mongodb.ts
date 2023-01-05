@@ -1,7 +1,14 @@
-import { AsyncResult, MyPubContext, MyPubDataModule, User } from "@mypub/types";
+import {
+  AsyncResult,
+  MyPubContext,
+  MyPubDataModule,
+  User,
+  UserData,
+} from "@mypub/types";
 import mongoose from "mongoose";
 import { Errors } from "mypub";
 import { UserModel } from "./models/User.js";
+import { UserFollowModel } from "./models/UserFollow.js";
 import { withStringId } from "./utils/mongodb.js";
 
 export function mongodb({ uri }: { uri: string }) {
@@ -56,6 +63,32 @@ export function mongodb({ uri }: { uri: string }) {
       return withStringId(userObject);
     }
 
+    async function upsertUserByUrl(
+      url: string,
+      user: Partial<UserData>,
+    ): AsyncResult<User> {
+      const result = await UserModel.findOneAndUpdate(
+        { url },
+        {
+          $set: { ...user, updated: new Date() },
+          $setOnInsert: {
+            counts: {
+              followers: 0,
+              following: 0,
+              content: 0,
+            },
+            created: new Date(),
+          },
+        },
+        { new: true, upsert: true },
+      );
+      if (!result) {
+        return { error: Errors.databaseError };
+      }
+      const userObject = result.toObject();
+      return withStringId(userObject);
+    }
+
     async function getUserFollowing() {
       await connect();
       return {
@@ -86,29 +119,37 @@ export function mongodb({ uri }: { uri: string }) {
       }
 
       if (state === "not-following") {
+        const { deletedCount } = await UserFollowModel.deleteOne({
+          user: userId,
+          follows: followingUser.id,
+        });
+        if (!deletedCount) {
+          return false;
+        }
+
         await user.update({
-          $pull: { following: { items: { userId: followingUserId } } },
+          $inc: { "counts.following": -1 },
         });
 
         return true;
       }
 
-      if (user.following.items?.find((user) => user.id === followingUserId)) {
-        await UserModel.updateOne(
-          { id: userId, following: { items: { userId: followingUserId } } },
-          {
-            $set: {
-              following: { "items.$": { userId: followingUserId, state } },
-            },
-          },
-        );
-      } else {
+      const { modifiedCount, upsertedCount } = await UserFollowModel.updateOne(
+        {
+          user: userId,
+          follows: followingUser.id,
+        },
+        { $set: { state } },
+        { new: true, upsert: true },
+      );
+
+      if (upsertedCount) {
         await user.update({
-          $push: { following: { items: { userId: followingUserId, state } } },
+          $inc: { "counts.following": 1 },
         });
       }
 
-      return true;
+      return modifiedCount > 0 || upsertedCount > 0;
     }
 
     return {
@@ -118,6 +159,7 @@ export function mongodb({ uri }: { uri: string }) {
       getUserFollowing,
       getUserFollowers,
       setUserFollowing,
+      upsertUserByUrl,
     };
   };
 }

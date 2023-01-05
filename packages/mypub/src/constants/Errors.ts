@@ -20,10 +20,13 @@ export const ErrorStatuses: Record<
 
 export const Errors = {
   badRequest: "badRequest",
+  databaseError: "databaseError",
+  invalidActor: "invalidActor",
   invalidActorUrl: "invalidActorUrl",
   invalidServerResponse: "invalidServerResponse",
   missingInstance: "missingInstance",
   notFound: "notFound",
   requestSigningError: "requestSigningError",
+  unknownError: "unknownError",
   X_notImplemented: "X_notImplemented",
 } as const;

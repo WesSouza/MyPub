@@ -1,8 +1,11 @@
-import { ObjectSchema } from "activitypub-zod";
 import { AsyncResult, MyPubContext } from "@mypub/types";
+import { ActorSchema } from "activitypub-zod";
+import omit from "lodash/omit.js";
 
 import { Errors } from "../constants/index.js";
+import { mapActorToUserData } from "../utils/activitypub-maps.js";
 import { respondWithError } from "../utils/http-response.js";
+import { isSimpleError } from "../utils/simple-error.js";
 
 export async function actor(
   context: MyPubContext,
@@ -146,7 +149,10 @@ export async function actor(
   );
 }
 
-export async function syncExternalActor(urlString: string) {
+export async function syncExternalActor(
+  context: MyPubContext,
+  urlString: string,
+) {
   let url: URL;
   try {
     url = new URL(urlString);
@@ -159,19 +165,23 @@ export async function syncExternalActor(urlString: string) {
       accept: "application/activity+json",
     },
   });
-  const actorData = ObjectSchema.parse(await actorResponse.json());
-  if (
-    !actorData ||
-    typeof actorData !== "object" ||
-    !("inbox" in actorData) ||
-    typeof actorData.inbox !== "string" ||
-    !("preferredUsername" in actorData) ||
-    typeof actorData.preferredUsername !== "string"
-  ) {
+  const actorData = ActorSchema.parse(await actorResponse.json());
+  if (!actorData.name) {
     return { error: Errors.invalidServerResponse };
   }
 
-  return { error: Errors.X_notImplemented };
+  const userData = mapActorToUserData(actorData);
+  if ("error" in userData) {
+    return userData;
+  }
+
+  const partialUserData = omit(userData, ["counts"]);
+
+  const user = await context.data.upsertUserByUrl(
+    actorData.id,
+    partialUserData,
+  );
+  return user;
 }
 
 export async function follow(
@@ -208,6 +218,20 @@ export async function follow(
     return { error: Errors.invalidServerResponse };
   }
 
+  const followingUser = await syncExternalActor(context, urlString);
+  if ("error" in followingUser) {
+    return followingUser;
+  }
+
+  const followStore = await context.data.setUserFollowing(
+    userId,
+    followingUser.id,
+    "pending",
+  );
+  if (isSimpleError(followStore)) {
+    return followStore;
+  }
+
   const followActionRequest = new Request(followedActorData.inbox, {
     method: "post",
     headers: {
@@ -229,6 +253,8 @@ export async function follow(
     followActionRequest,
   );
   if ("error" in followActionSignedRequest) {
+    context.data.setUserFollowing(userId, followingUser.id, "not-following");
+
     return {
       error: Errors.requestSigningError,
       reason: followActionSignedRequest,
@@ -237,11 +263,9 @@ export async function follow(
 
   const followActionResponse = await fetch(followActionSignedRequest);
   if (followActionResponse.status >= 300) {
+    context.data.setUserFollowing(userId, followingUser.id, "not-following");
     return false;
   }
-
-  // ToDo: upsert a user in the db for a followingUserId
-  // context.data.setUserFollowing(userId, followingUserId, "pending");
 
   return true;
 }

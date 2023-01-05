@@ -32,7 +32,7 @@ export const myPub = new MyPub({
 });
 
 const server = fastify({
-  logger: {
+  /* logger: {
     transport: {
       target: "pino-pretty",
     },
@@ -46,7 +46,7 @@ const server = fastify({
         };
       },
     },
-  },
+  }, */
   trustProxy: true,
 });
 

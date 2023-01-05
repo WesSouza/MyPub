@@ -20,31 +20,10 @@ const UserSchema = new Schema<User>({
     cover: { type: String },
     profile: { type: String },
   },
-  followers: {
-    items: {
-      type: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-      default: undefined,
-    },
-    total: { type: Number, required: true },
-  },
-  following: {
-    items: {
-      type: [
-        {
-          user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-          state: {
-            type: String,
-            enum: ["following", "pending"],
-            required: true,
-          },
-        },
-      ],
-      default: undefined,
-    },
-    total: { type: Number, required: true },
-  },
-  content: {
-    total: { type: Number, required: true },
+  counts: {
+    followers: { type: Number, default: 0 },
+    following: { type: Number, default: 0 },
+    content: { type: Number, default: 0 },
   },
   publicKey: { type: String, required: true },
   created: { type: Date, required: true },

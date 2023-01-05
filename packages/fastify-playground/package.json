@@ -17,7 +17,7 @@
   "scripts": {
     "build": "tsc",
     "check:types": "tsc --noEmit",
-    "dev": "sleep 2; NODE_ENV=debug nodemon -e js,ts --watch '..' --delay 1 --exec ts-node ./src/main.ts",
+    "dev": "sleep 4; NODE_ENV=debug nodemon -e js,ts --watch '..' --delay 1 --exec ts-node ./src/main.ts",
     "lint": "eslint --cache --cache-location \".cache/eslintcache\" src && prettier --check src"
   },
   "engines": {

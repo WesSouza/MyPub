@@ -1,20 +1,24 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 
 export function unwrapFastifyRequest(fastifyRequest: FastifyRequest): Request {
-  return new Request(
-    `http://${fastifyRequest.headers.host ?? "0.0.0.0"}${fastifyRequest.url}`,
-    {
-      method: fastifyRequest.method,
-      headers: (
-        Object.entries(fastifyRequest.headers).filter(
-          ([, value]) => value !== undefined,
-        ) as [string, string][]
-      ).map(([key, value]) =>
-        Array.isArray(value) ? [key, value.join(", ")] : [key, value],
-      ),
-      body: fastifyRequest.raw.read(),
-    },
-  );
+  const { body, headers, url, method } = fastifyRequest;
+  return new Request(`http://${headers.host ?? "0.0.0.0"}${url}`, {
+    method: method,
+    headers: (
+      Object.entries(headers).filter(([, value]) => value !== undefined) as [
+        string,
+        string,
+      ][]
+    ).map(([key, value]) =>
+      Array.isArray(value) ? [key, value.join(", ")] : [key, value],
+    ),
+    body:
+      typeof body === "object"
+        ? JSON.stringify(body)
+        : body === "string"
+        ? body
+        : null,
+  });
 }
 
 export async function replyWithResponse(

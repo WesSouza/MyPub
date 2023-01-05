@@ -4,7 +4,7 @@ import { Errors, ErrorStatuses, ErrorType } from "../constants/index.js";
 
 export function respondWithError(
   errorType: ErrorType,
-  error: keyof typeof Errors,
+  error: keyof typeof Errors | string,
   reason?: Error | SimpleError,
 ) {
   console.error(error, reason ?? "");

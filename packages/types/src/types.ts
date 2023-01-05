@@ -74,28 +74,21 @@ export type User = {
   tag: string[];
   links: { name: string; href: string }[];
   images: {
-    cover: string | undefined;
-    profile: string | undefined;
+    cover?: string | undefined;
+    profile?: string | undefined;
   };
-  followers: {
-    items?: { user: User; state: "following" | "pending" }[];
-    total: number;
-  };
-  following: {
-    items?: User[];
-    total: number;
-  };
-  content: {
-    total: number;
-  };
+  counts: Record<"followers" | "following" | "content", number>;
   publicKey: string;
   created: Date;
   updated: Date;
 };
 
-export type UserShallow = Omit<User, "followers" | "following"> & {
-  followers: Pick<User["followers"], "total">;
-  following: Pick<User["following"], "total">;
+export type UserData = Omit<User, "id" | "created" | "updated">;
+
+export type UserFollow = {
+  user: User;
+  follows: User;
+  state: "following" | "pending";
 };
 
 export type MastodonApplication = {
@@ -117,14 +110,7 @@ export type Note = {
   sensitive: boolean;
   sensitiveSummary: string;
   pinned: boolean;
-  announcements: {
-    items?: UserShallow[];
-    total: number;
-  };
-  likes: {
-    items?: UserShallow[];
-    total: number;
-  };
+  counts: Record<"announcements" | "likes", number>;
   created: Date;
   updated: Date;
 };
@@ -154,16 +140,17 @@ export type MyPubDataModule = {
   getUserFollowing: (
     userId: string,
     page: Pagination,
-  ) => AsyncResult<Collection<UserShallow>>;
+  ) => AsyncResult<Collection<User>>;
   getUserFollowers: (
     userId: string,
     page: Pagination,
-  ) => AsyncResult<Collection<UserShallow>>;
+  ) => AsyncResult<Collection<User>>;
   setUserFollowing: (
     userId: string,
     followingUserId: string,
     state: "following" | "pending" | "not-following",
   ) => AsyncResult<boolean>;
+  upsertUserByUrl: (url: string, user: Partial<UserData>) => AsyncResult<User>;
 };
 
 export type FileData = {

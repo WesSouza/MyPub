@@ -3,11 +3,13 @@ import type {
   MyPubConfig,
   MyPubInstanceData,
 } from "@mypub/types";
-import { actor, follow } from "./activity-pub/actor.js";
 
+import { actor, follow } from "./activity-pub/actor.js";
+import { inboxReceive } from "./activity-pub/inbox.js";
 import { Errors } from "./constants/Errors.js";
 import { MyPubContext } from "./MyPubContext.js";
 import { respondWithError } from "./utils/http-response.js";
+import { isSimpleError } from "./utils/simple-error.js";
 import { hostMeta } from "./wellKnown/hostMeta.js";
 import { webFinger } from "./wellKnown/webFinger.js";
 
@@ -57,7 +59,15 @@ export class MyPub {
     return respondWithError("notFound", Errors.X_notImplemented);
   };
 
-  handleInboxPost = (_: Request, _1?: { actorHandle?: string }) => {
-    return respondWithError("notFound", Errors.X_notImplemented);
+  handleInboxPost = async (
+    request: Request,
+    { actorHandle }: { actorHandle?: string } = {},
+  ) => {
+    const result = await inboxReceive(this.context, request, actorHandle);
+    if (isSimpleError(result)) {
+      return respondWithError("notFound", result.error);
+    }
+
+    return new Response(undefined, { status: 200 });
   };
 }
