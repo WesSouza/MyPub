@@ -67,6 +67,7 @@ export function mongodb({ uri }: { uri: string }) {
       url: string,
       user: Partial<UserData>,
     ): AsyncResult<User> {
+      await connect();
       const result = await UserModel.findOneAndUpdate(
         { url },
         {
@@ -108,6 +109,7 @@ export function mongodb({ uri }: { uri: string }) {
       followingUserId: string,
       state: "following" | "pending" | "not-following",
     ): AsyncResult<boolean> {
+      await connect();
       const user = await UserModel.findById(userId);
       if (!user) {
         return { error: Errors.notFound };

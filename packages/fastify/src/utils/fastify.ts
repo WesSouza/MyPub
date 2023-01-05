@@ -1,7 +1,20 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 
-export function unwrapFastifyRequest(fastifyRequest: FastifyRequest): Request {
-  const { body, headers, url, method } = fastifyRequest;
+import { MyPubFastifyOptions } from "../myPubPlugin.js";
+
+export async function unwrapFastifyRequest(
+  fastifyRequest: FastifyRequest,
+  options: MyPubFastifyOptions,
+): Promise<Request> {
+  const { headers, url, method } = fastifyRequest;
+  if (
+    options.enableXForwardedHost &&
+    typeof headers["x-forwarded-host"] === "string"
+  ) {
+    headers.host = headers["x-forwarded-host"];
+    delete headers["x-forwarded-host"];
+  }
+
   return new Request(`http://${headers.host ?? "0.0.0.0"}${url}`, {
     method: method,
     headers: (
@@ -12,12 +25,7 @@ export function unwrapFastifyRequest(fastifyRequest: FastifyRequest): Request {
     ).map(([key, value]) =>
       Array.isArray(value) ? [key, value.join(", ")] : [key, value],
     ),
-    body:
-      typeof body === "object"
-        ? JSON.stringify(body)
-        : body === "string"
-        ? body
-        : null,
+    body: fastifyRequest.rawBodyString ?? null,
   });
 }
 

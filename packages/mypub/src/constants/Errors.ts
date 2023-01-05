@@ -21,9 +21,11 @@ export const ErrorStatuses: Record<
 export const Errors = {
   badRequest: "badRequest",
   databaseError: "databaseError",
+  ignored: "ignored",
   invalidActor: "invalidActor",
   invalidActorUrl: "invalidActorUrl",
   invalidServerResponse: "invalidServerResponse",
+  invalidSignature: "invalidSignature",
   missingInstance: "missingInstance",
   notFound: "notFound",
   requestSigningError: "requestSigningError",

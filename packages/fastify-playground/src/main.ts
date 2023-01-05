@@ -50,29 +50,9 @@ const server = fastify({
   trustProxy: true,
 });
 
-server.addHook("preHandler", function (req, _, done) {
-  if (req.body) {
-    if (
-      typeof req.body === "object" &&
-      "type" in req.body &&
-      req.body?.type === "Delete" &&
-      "id" in req.body &&
-      typeof req.body.id === "string" &&
-      req.body.id.match(/https?:\/\/[^\/]+\/users\/[^#\/]+#delete/)
-    ) {
-      req.log.info({ requestId: req.id, delete: req.body.id });
-      done();
-      return;
-    }
-
-    req.log.info({ requestId: req.id, body: req.body });
-  }
-  done();
-});
-
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
 
-server.register(myPubFastify(myPub));
+server.register(myPubFastify(myPub, { enableXForwardedHost: true }));
 
 server
   .listen({ host: "0.0.0.0", port: PORT })

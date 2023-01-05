@@ -1,18 +1,21 @@
 import { AsyncResult, MyPubContext } from "@mypub/types";
-import { Activity, ActivitySchema } from "activitypub-zod";
+import { ActivitySchema, AnyActivity } from "activitypub-zod";
 import { Errors } from "../index.js";
 import { isSingleOfType } from "../utils/activitypub-utils.js";
 import { isSimpleError } from "../utils/simple-error.js";
+import { handleRequest } from "./requestHandler.js";
 
 export async function inboxReceive(
   context: MyPubContext,
   request: Request,
   _1?: string,
 ): AsyncResult<boolean> {
-  // TODO: So much geez, at least make sure this is secure!
+  const activity = await handleRequest(context, request, ActivitySchema);
+  if (isSimpleError(activity)) {
+    console.error(activity);
+    return activity;
+  }
 
-  const body = await request.json();
-  const activity = ActivitySchema.parse(body);
   console.log(
     request.headers.get("user-agent"),
     request.headers.get("content-type"),
@@ -22,7 +25,7 @@ export async function inboxReceive(
   switch (activity.type) {
     case "Accept": {
       const { object } = activity;
-      if (!isSingleOfType<Activity>(object, "Follow")) {
+      if (!isSingleOfType<AnyActivity>(object, "Follow")) {
         console.log(`Unsupported ${activity.type} object at ${activity.id}`);
         return {
           error: Errors.badRequest,

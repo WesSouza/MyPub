@@ -5,7 +5,6 @@ import { dateValue, DateValue, urlValue } from "./common.js";
 import { LinkSchema } from "./Link.js";
 
 import {
-  anyObjectOrArray,
   AnyObjectOrArray,
   lazyObjectSchema,
   ObjectOrLink,
@@ -49,7 +48,12 @@ type ActivityBase = Omit<ObjectType, "type"> & {
 };
 
 const lazyActivitySchema = () => {
-  const object = z.union([urlValue, ActivitySchema, ActorSchema, ObjectSchema]);
+  const object = z.union([
+    urlValue,
+    AnyActivitySchema,
+    ActorSchema,
+    ObjectSchema,
+  ]);
   const objectOrArray = z.union([object, z.array(object)]);
   const objectOrLink = z.union([urlValue, LinkSchema, ObjectSchema]);
   const objectOrLinkOrArray = z.union([objectOrLink, z.array(objectOrLink)]);
@@ -88,7 +92,7 @@ const lazyActivitySchema = () => {
       ]),
       actor: actorOrLinkOrArray.nullish(),
       instrument: objectOrArray.nullish(),
-      object: anyObjectOrArray().nullish(),
+      object: objectOrLinkOrArray.nullish(),
       origin: objectOrArray.nullish(),
       result: objectOrArray.nullish(),
       target: objectOrLinkOrArray.nullish(),
@@ -109,7 +113,7 @@ export const lazyIntransitiveActivity = () =>
 export const IntransitiveActivitySchema: z.ZodType<IntransitiveActivity> =
   z.lazy(lazyIntransitiveActivity);
 
-export type Question = Omit<ObjectType, "type"> & {
+export type Question = Omit<ActivityBase, "type"> & {
   type: "Question";
   closed?: DateValue | boolean | null | undefined;
 } & (
@@ -135,8 +139,14 @@ export const lazyQuestion = () => {
 
 export const QuestionSchema: z.ZodType<Question> = z.lazy(lazyQuestion);
 
-export type Activity = ActivityBase | IntransitiveActivity | Question;
+export type Activity = ActivityBase | Question;
 
 export const ActivitySchema: z.ZodType<Activity> = z.lazy(() =>
-  z.union([lazyActivitySchema(), IntransitiveActivitySchema, QuestionSchema]),
+  z.union([lazyActivitySchema(), QuestionSchema]),
+);
+
+export type AnyActivity = Activity | IntransitiveActivity;
+
+export const AnyActivitySchema: z.ZodType<AnyActivity> = z.lazy(() =>
+  z.union([lazyActivitySchema(), IntransitiveActivitySchema]),
 );

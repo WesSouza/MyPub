@@ -30,3 +30,5 @@ export const HandleRegExpMultiple =
   /(?<prefix>@?)(?<handle>[a-z0-9\-\._]+)@(?<domain>[a-z0-9]+[a-z0-9\-\.]*\.[a-z0-9]{2,})/gi;
 
 export const SharedInbox = { path: "sharedInbox" as const };
+
+export const PublicDestination = "https://www.w3.org/ns/activitystreams#Public";

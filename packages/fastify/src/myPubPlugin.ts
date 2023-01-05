@@ -16,8 +16,13 @@ import {
 
 import { replyWithResponse, unwrapFastifyRequest } from "./utils/fastify.js";
 
+export type MyPubFastifyOptions = {
+  enableXForwardedHost?: boolean;
+};
+
 export function myPubFastify(
   myPub: MyPub,
+  options: MyPubFastifyOptions = {},
 ): FastifyPluginAsync<
   FastifyPluginOptions,
   RawServerDefault,
@@ -27,11 +32,12 @@ export function myPubFastify(
     const { pathSegments } = myPub.instance;
 
     const parseJson: FastifyBodyParser<string> = function parseJson(
-      _,
+      request,
       body,
       done,
     ) {
       try {
+        request.rawBodyString = body;
         done(null, JSON.parse(body));
       } catch (error) {
         if (error instanceof Error) {
@@ -68,7 +74,7 @@ export function myPubFastify(
     });
 
     fastify.get("/.well-known/webfinger", {}, async (fastifyRequest, reply) => {
-      const request = unwrapFastifyRequest(fastifyRequest);
+      const request = await unwrapFastifyRequest(fastifyRequest, options);
       const response = await myPub.handleWebFinger(request);
       return replyWithResponse(reply, response);
     });
@@ -78,7 +84,7 @@ export function myPubFastify(
       {},
       async (fastifyRequest, reply) => {
         const { actorHandle } = fastifyRequest.params;
-        const request = unwrapFastifyRequest(fastifyRequest);
+        const request = await unwrapFastifyRequest(fastifyRequest, options);
         const response = await myPub.handleActor(request, {
           actorHandle,
         });
@@ -97,7 +103,7 @@ export function myPubFastify(
         {},
         async (fastifyRequest, reply) => {
           const { actorHandle } = fastifyRequest.params;
-          const request = unwrapFastifyRequest(fastifyRequest);
+          const request = await unwrapFastifyRequest(fastifyRequest, options);
           const response = await myPub.handleActorCollection(request, {
             actorHandle,
             collection: collection as ActorCollection,
@@ -112,7 +118,7 @@ export function myPubFastify(
       {},
       async (fastifyRequest, reply) => {
         const { actorHandle, objectId } = fastifyRequest.params;
-        const request = unwrapFastifyRequest(fastifyRequest);
+        const request = await unwrapFastifyRequest(fastifyRequest, options);
         const response = await myPub.handleActorObject(request, {
           actorHandle,
           objectId,
@@ -142,7 +148,7 @@ export function myPubFastify(
     );
 
     fastify.post(`/${SharedInbox.path}`, {}, async (fastifyRequest, reply) => {
-      const request = unwrapFastifyRequest(fastifyRequest);
+      const request = await unwrapFastifyRequest(fastifyRequest, options);
       const response = await myPub.handleInboxPost(request);
       return replyWithResponse(reply, response);
     });
@@ -152,7 +158,7 @@ export function myPubFastify(
       {},
       async (fastifyRequest, reply) => {
         const { actorHandle } = fastifyRequest.params;
-        const request = unwrapFastifyRequest(fastifyRequest);
+        const request = await unwrapFastifyRequest(fastifyRequest, options);
         const response = await myPub.handleInboxPost(request, { actorHandle });
         return replyWithResponse(reply, response);
       },

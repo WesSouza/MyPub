@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { Activity, ActivitySchema } from "./Activities.js";
+import { AnyActivity, AnyActivitySchema } from "./Activities.js";
 import { Actor, ActorSchema } from "./Actors.js";
 import { Collection, CollectionSchema } from "./Collection.js";
 import { dateValue, durationValue, UrlValue, urlValue } from "./common.js";
@@ -299,11 +299,17 @@ export const ObjectSchema: z.ZodType<
   ]),
 );
 
-export type AnyObject = Activity | Actor | ObjectOrLink;
-export type AnyObjectNotString = Activity | Actor | ObjectType | Link;
+export type AnyObject = AnyActivity | Actor | ObjectOrLink;
+export type AnyObjectNotString = AnyActivity | Actor | ObjectType | Link;
 export type AnyObjectOrArray = AnyObject | AnyObject[];
 
 export const anyObject = () =>
-  z.union([ActivitySchema, ActorSchema, urlValue, LinkSchema, ObjectSchema]);
+  z.union([AnyActivitySchema, ActorSchema, urlValue, LinkSchema, ObjectSchema]);
 export const anyObjectOrArray = () =>
   z.union([anyObject(), z.array(anyObject())]);
+
+export const AnyObjectSchema: z.ZodType<AnyObject> = z.lazy(anyObject);
+
+export const AnyObjectNotStringSchema: z.ZodType<AnyObjectNotString> = z.lazy(
+  () => z.union([AnyActivitySchema, ActorSchema, LinkSchema, ObjectSchema]),
+);
