@@ -124,7 +124,7 @@ export async function actor(
         value: `<a href="${link.href}" target="_blank" rel="nofollow noopener noreferrer me">${link.href}</a>`,
       })),
       endpoints: {
-        sharedInbox: `https://${context.instance.domain}/${context.instance.pathSegments.sharedInbox}`,
+        sharedInbox: `https://${context.instance.domain}/${context.instance.pathSegments["shared-inbox"]}`,
       },
       icon: user.images.profile
         ? {

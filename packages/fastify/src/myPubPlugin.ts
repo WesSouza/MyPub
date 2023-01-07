@@ -6,13 +6,7 @@ import type {
   RawServerDefault,
 } from "fastify";
 import fp from "fastify-plugin";
-import {
-  ActorCollection,
-  ActorCollections,
-  Errors,
-  MyPub,
-  SharedInbox,
-} from "mypub";
+import { ActorCollection, ActorCollections, Errors, MyPub } from "mypub";
 
 import { replyWithResponse, unwrapFastifyRequest } from "./utils/fastify.js";
 
@@ -147,11 +141,15 @@ export function myPubFastify(
       },
     );
 
-    fastify.post(`/${SharedInbox.path}`, {}, async (fastifyRequest, reply) => {
-      const request = await unwrapFastifyRequest(fastifyRequest, options);
-      const response = await myPub.handleInboxPost(request);
-      return replyWithResponse(reply, response);
-    });
+    fastify.post(
+      `/${pathSegments["shared-inbox"]}`,
+      {},
+      async (fastifyRequest, reply) => {
+        const request = await unwrapFastifyRequest(fastifyRequest, options);
+        const response = await myPub.handleInboxPost(request);
+        return replyWithResponse(reply, response);
+      },
+    );
 
     fastify.post<{ Params: { actorHandle: string } }>(
       `/${pathSegments.users}/:actorHandle/${pathSegments.inbox}`,

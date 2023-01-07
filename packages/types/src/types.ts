@@ -1,4 +1,4 @@
-export type ActivityPubPathSegment =
+export type MyPubPathSegment =
   | "activity"
   | "followers"
   | "following"
@@ -6,7 +6,7 @@ export type ActivityPubPathSegment =
   | "liked"
   | "outbox"
   | "replies"
-  | "sharedInbox"
+  | "shared-inbox"
   | "statuses"
   | "users";
 
@@ -32,7 +32,7 @@ export type MyPubInstanceData = {
   description: string;
   email: string;
   adminUserId: string;
-  pathSegments: Record<ActivityPubPathSegment, string>;
+  pathSegments: Record<MyPubPathSegment, string>;
 };
 
 export type MyPubContext = {

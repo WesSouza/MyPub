@@ -19,6 +19,7 @@ export class MyPubContext {
     this.instance = {
       ...config.instance,
       pathSegments: config.instance.pathSegments ?? {
+        "shared-inbox": "shared-inbox",
         activity: "activity",
         followers: "followers",
         following: "following",
@@ -26,7 +27,6 @@ export class MyPubContext {
         liked: "liked",
         outbox: "outbox",
         replies: "replies",
-        sharedInbox: "sharedInbox",
         statuses: "statuses",
         users: "users",
       },
