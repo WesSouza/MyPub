@@ -79,6 +79,10 @@ export type User = {
     profile?: string | undefined;
   };
   counts: Record<"followers" | "following" | "content", number>;
+  flags: {
+    local: boolean;
+    manuallyApprovesFollowers: boolean;
+  };
   inboxUrl?: string | undefined;
   publicKey: string;
   created: Date;
@@ -87,9 +91,10 @@ export type User = {
 
 export type UserData = Omit<User, "id" | "created" | "updated">;
 
-export type UserFollow = {
-  user: User;
-  follows: User;
+export type UserFollow<T> = {
+  user: T;
+  follows: T;
+  activityId: string;
   state: "following" | "pending";
 };
 
@@ -150,7 +155,20 @@ export type MyPubDataModule = {
   setUserFollowing: (
     userId: string,
     followingUserId: string,
+    activityId: string,
     state: "following" | "pending" | "not-following",
+  ) => AsyncResult<boolean>;
+  acceptedUserFollowing: (
+    followedUserId: string,
+    activityId: string,
+  ) => AsyncResult<boolean>;
+  rejectUserFollowed: (
+    followedUserId: string,
+    activityId: string,
+  ) => AsyncResult<boolean>;
+  undoUserFollowing: (
+    userId: string,
+    activityId: string,
   ) => AsyncResult<boolean>;
   upsertUserByUrl: (url: string, user: Partial<UserData>) => AsyncResult<User>;
 };

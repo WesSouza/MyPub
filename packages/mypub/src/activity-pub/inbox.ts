@@ -1,8 +1,10 @@
 import { AsyncResult, MyPubContext } from "@mypub/types";
-import { ActivitySchema, AnyActivity } from "activitypub-zod";
+import { Activity, ActivitySchema } from "activitypub-zod";
+
 import { Errors } from "../index.js";
 import { isSingleOfType } from "../utils/activitypub-utils.js";
 import { isSimpleError } from "../utils/simple-error.js";
+import { postToInbox, syncExternalActor } from "./actor.js";
 import { handleRequest } from "./requestHandler.js";
 
 export async function inboxReceive(
@@ -12,51 +14,189 @@ export async function inboxReceive(
 ): AsyncResult<boolean> {
   const activity = await handleRequest(context, request, ActivitySchema);
   if (isSimpleError(activity)) {
-    console.error(activity);
+    if (activity.error === Errors.ignored) {
+      return true;
+    }
+
+    console.error({
+      request: `${request.method} ${request.url} ${
+        request.headers.get("user-agent") ?? ""
+      }`,
+      error: activity,
+    });
     return activity;
   }
 
-  console.log(
-    request.headers.get("user-agent"),
-    request.headers.get("content-type"),
-    activity,
-  );
-
   switch (activity.type) {
     case "Accept": {
-      const { object } = activity;
-      if (!isSingleOfType<AnyActivity>(object, "Follow")) {
-        console.log(`Unsupported ${activity.type} object at ${activity.id}`);
+      const { actor, object } = activity;
+      if (typeof actor !== "string") {
         return {
           error: Errors.badRequest,
+          reason: "`actor` is unsupported",
         };
       }
-      if (!("actor" in object) || typeof object.actor !== "string") {
-        console.log(`Unsupported ${activity.type} actor at ${activity.id}`);
+      if (!isSingleOfType<Activity>(object, "Follow")) {
         return {
           error: Errors.badRequest,
+          reason: "`object` is unsupported",
         };
       }
-      if (typeof object.object !== "string") {
-        console.log(`Unsupported ${activity.type} object at ${activity.id}`);
+      if (typeof object.id !== "string") {
         return {
           error: Errors.badRequest,
+          reason: "`object.id` is unsupported",
         };
       }
-      const user = await context.data.getUserByUrl(object.actor);
-      if (isSimpleError(user)) {
-        return user;
+
+      const followedUser = await syncExternalActor(context, actor);
+      if (isSimpleError(followedUser)) {
+        return followedUser;
       }
-      const followingUser = await context.data.getUserByUrl(object.object);
-      if (isSimpleError(followingUser)) {
-        return followingUser;
-      }
-      return context.data.setUserFollowing(
-        user.id,
-        followingUser.id,
-        "following",
-      );
+
+      return context.data.acceptedUserFollowing(followedUser.id, object.id);
     }
+
+    case "Follow": {
+      const { actor, id, object } = activity;
+      if (typeof id !== "string") {
+        return {
+          error: Errors.badRequest,
+          reason: "`id` is unsupported",
+        };
+      }
+      if (typeof actor !== "string") {
+        return {
+          error: Errors.badRequest,
+          reason: "`actor` is unsupported",
+        };
+      }
+      if (typeof object !== "string") {
+        return {
+          error: Errors.badRequest,
+          reason: "`object` is unsupported",
+        };
+      }
+
+      const followerUser = await syncExternalActor(context, actor);
+      if (isSimpleError(followerUser)) {
+        return followerUser;
+      }
+
+      const followedUser = await context.data.getUserByUrl(object);
+      if (isSimpleError(followedUser)) {
+        return followedUser;
+      }
+      if (!followedUser.flags.local) {
+        return {
+          error: Errors.ignored,
+          reason: "We don't care",
+        };
+      }
+
+      const { manuallyApprovesFollowers } = followedUser.flags;
+
+      const update = await context.data.setUserFollowing(
+        followerUser.id,
+        followedUser.id,
+        id,
+        manuallyApprovesFollowers ? "pending" : "following",
+      );
+      if (isSimpleError(update)) {
+        return update;
+      }
+
+      if (manuallyApprovesFollowers) {
+        // TODO: Notify client about an incoming follow request
+        return true;
+      }
+
+      const accept: Activity = {
+        "@context": "https://www.w3.org/ns/activitystreams",
+        actor: followedUser.url,
+        id: `${followedUser.url}/${followerUser.handle}@${followerUser.domain}/follow`,
+        object: activity,
+        published: new Date().toISOString(),
+        to: followerUser.url,
+        type: "Accept",
+      };
+
+      const acceptPost = await postToInbox(
+        context,
+        followedUser,
+        followerUser,
+        accept,
+      );
+      if (isSimpleError(acceptPost)) {
+        context.data.setUserFollowing(
+          followerUser.id,
+          followedUser.id,
+          id,
+          "not-following",
+        );
+      }
+
+      return acceptPost;
+    }
+
+    case "Reject": {
+      const { actor, object } = activity;
+      if (typeof actor !== "string") {
+        return {
+          error: Errors.badRequest,
+          reason: "`actor` is unsupported",
+        };
+      }
+      if (!isSingleOfType<Activity>(object, "Follow")) {
+        return {
+          error: Errors.badRequest,
+          reason: "`object` is unsupported",
+        };
+      }
+      if (typeof object.id !== "string") {
+        return {
+          error: Errors.badRequest,
+          reason: "`object.id` is unsupported",
+        };
+      }
+
+      const followedUser = await syncExternalActor(context, actor);
+      if (isSimpleError(followedUser)) {
+        return followedUser;
+      }
+
+      return context.data.rejectUserFollowed(followedUser.id, object.id);
+    }
+
+    case "Undo": {
+      const { actor, object } = activity;
+      if (typeof actor !== "string") {
+        return {
+          error: Errors.badRequest,
+          reason: "`actor` is unsupported",
+        };
+      }
+      if (!isSingleOfType<Activity>(object, "Follow")) {
+        return {
+          error: Errors.badRequest,
+          reason: "`object` is unsupported",
+        };
+      }
+      if (typeof object.id !== "string") {
+        return {
+          error: Errors.badRequest,
+          reason: "`object.id` is unsupported",
+        };
+      }
+
+      const followerUser = await syncExternalActor(context, actor);
+      if (isSimpleError(followerUser)) {
+        return followerUser;
+      }
+
+      return context.data.undoUserFollowing(followerUser.id, object.id);
+    }
+
     default: {
       console.log(
         `Unsupported activity type ${activity.type} at ${activity.id}`,

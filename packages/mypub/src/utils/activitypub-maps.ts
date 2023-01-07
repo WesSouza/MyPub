@@ -39,6 +39,10 @@ export function mapActorToUserData(actor: Actor): UserData | SimpleError {
       following: 0,
       content: 0,
     },
+    flags: {
+      local: false,
+      manuallyApprovesFollowers: actor.manuallyApprovesFollowers ?? false,
+    },
     inboxUrl: actor.inbox ?? undefined,
     publicKey: actor.publicKey?.publicKeyPem,
   };

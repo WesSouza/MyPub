@@ -23,6 +23,25 @@ export function mongodb({ uri }: { uri: string }) {
   }
 
   return function withContext(context: MyPubContext): MyPubDataModule {
+    async function acceptedUserFollowing(
+      followedUserId: string,
+      activityId: string,
+    ): AsyncResult<boolean> {
+      await connect();
+      const { modifiedCount } = await UserFollowModel.updateOne(
+        {
+          follows: followedUserId,
+          activityId,
+        },
+        { $set: { state: "following" } },
+      );
+      if (!modifiedCount) {
+        return false;
+      }
+
+      return true;
+    }
+
     async function getUser(userId: string): AsyncResult<User> {
       await connect();
       const user = await UserModel.findById(userId);
@@ -104,9 +123,37 @@ export function mongodb({ uri }: { uri: string }) {
       };
     }
 
+    async function rejectUserFollowed(
+      followedUserId: string,
+      activityId: string,
+    ): AsyncResult<boolean> {
+      await connect();
+      const followedUser = await UserModel.findById(followedUserId);
+      if (!followedUser) {
+        return { error: Errors.notFound };
+      }
+
+      const follow = await UserFollowModel.findOneAndDelete({
+        follows: followedUserId,
+        activityId,
+      });
+      if (!follow) {
+        return false;
+      }
+
+      await followedUser.update({ $inc: { "counts.followers": -1 } });
+      await UserModel.updateOne(
+        { _id: follow.user._id },
+        { $inc: { "counts.following": -1 } },
+      );
+
+      return true;
+    }
+
     async function setUserFollowing(
       userId: string,
       followingUserId: string,
+      activityId: string,
       state: "following" | "pending" | "not-following",
     ): AsyncResult<boolean> {
       await connect();
@@ -129,9 +176,8 @@ export function mongodb({ uri }: { uri: string }) {
           return false;
         }
 
-        await user.update({
-          $inc: { "counts.following": -1 },
-        });
+        await user.update({ $inc: { "counts.following": -1 } });
+        await followingUser.update({ $inc: { "counts.followers": -1 } });
 
         return true;
       }
@@ -141,26 +187,55 @@ export function mongodb({ uri }: { uri: string }) {
           user: userId,
           follows: followingUser.id,
         },
-        { $set: { state } },
+        { $set: { state }, $setOnInsert: { activityId } },
         { new: true, upsert: true },
       );
 
       if (upsertedCount) {
-        await user.update({
-          $inc: { "counts.following": 1 },
-        });
+        await user.update({ $inc: { "counts.following": 1 } });
+        await followingUser.update({ $inc: { "counts.followers": 1 } });
       }
 
       return modifiedCount > 0 || upsertedCount > 0;
     }
 
+    async function undoUserFollowing(
+      userId: string,
+      activityId: string,
+    ): AsyncResult<boolean> {
+      await connect();
+      const user = await UserModel.findById(userId);
+      if (!user) {
+        return { error: Errors.notFound };
+      }
+
+      const follow = await UserFollowModel.findOneAndDelete({
+        user: userId,
+        activityId,
+      });
+      if (!follow) {
+        return false;
+      }
+
+      await user.update({ $inc: { "counts.following": -1 } });
+      await UserModel.updateOne(
+        { _id: follow.follows._id },
+        { $inc: { "counts.followers": -1 } },
+      );
+
+      return true;
+    }
+
     return {
+      acceptedUserFollowing,
       getUser,
       getUserByHandle,
       getUserByUrl,
       getUserFollowing,
       getUserFollowers,
+      rejectUserFollowed,
       setUserFollowing,
+      undoUserFollowing,
       upsertUserByUrl,
     };
   };

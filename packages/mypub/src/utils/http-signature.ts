@@ -158,7 +158,6 @@ export function verifyDigest(
     .replace(/=+$/, "");
 
   if (expectedDigest !== value) {
-    console.log(expectedDigest, value, bodyText);
     return {
       error: Errors.invalidSignature,
       reason: `Digest does not match`,
@@ -186,7 +185,7 @@ export function verifySignature(
       ),
     )
     .join("\n");
-  console.log(signature, verifiableData);
+
   const validSignature = crypto.verify(
     "rsa-sha256",
     Buffer.from(verifiableData, "utf-8"),

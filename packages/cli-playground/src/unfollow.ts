@@ -2,10 +2,10 @@ import { myPub } from "./myPub.js";
 
 const [, , url] = process.argv;
 
-console.log(`Following ${url}`);
+console.log(`Unfollowing ${url}`);
 
 myPub
-  .followActor(myPub.instance.adminUserId, url)
+  .unfollowActor(myPub.instance.adminUserId, url)
   .then((result) => {
     if (result && typeof result === "object" && "error" in result) {
       console.error(result);

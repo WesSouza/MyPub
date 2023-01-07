@@ -49,7 +49,8 @@ export async function handleRequest<T extends z.ZodType<AnyObjectNotString>>(
     isSingleOfType<Activity>(object, "Delete") &&
     object.id?.endsWith("#delete") &&
     typeof object.actor === "string" &&
-    typeof object.target === "string" &&
+    typeof object.object === "string" &&
+    object.actor === object.object &&
     Array.isArray(object.to) &&
     object.to?.[0] === PublicDestination
   ) {

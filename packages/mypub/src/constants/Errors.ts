@@ -26,6 +26,7 @@ export const Errors = {
   invalidActorUrl: "invalidActorUrl",
   invalidServerResponse: "invalidServerResponse",
   invalidSignature: "invalidSignature",
+  missingInbox: "missingInbox",
   missingInstance: "missingInstance",
   notFound: "notFound",
   requestSigningError: "requestSigningError",

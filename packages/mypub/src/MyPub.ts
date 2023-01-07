@@ -4,7 +4,7 @@ import type {
   MyPubInstanceData,
 } from "@mypub/types";
 
-import { actor, follow } from "./activity-pub/actor.js";
+import { actor, follow, unfollow } from "./activity-pub/actor.js";
 import { inboxReceive } from "./activity-pub/inbox.js";
 import { Errors } from "./constants/Errors.js";
 import { MyPubContext } from "./MyPubContext.js";
@@ -25,6 +25,10 @@ export class MyPub {
 
   followActor = (userId: string, url: string) => {
     return follow(this.context, userId, url);
+  };
+
+  unfollowActor = (userId: string, url: string) => {
+    return unfollow(this.context, userId, url);
   };
 
   handleHostMeta = () => {
@@ -74,7 +78,7 @@ export class MyPub {
   ) => {
     const result = await inboxReceive(this.context, request, actorHandle);
     if (isSimpleError(result)) {
-      return respondWithError("notFound", result.error);
+      return respondWithError("notFound", result.error, result.reason);
     }
 
     return new Response(undefined, { status: 200 });
