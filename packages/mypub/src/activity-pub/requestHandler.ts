@@ -3,7 +3,7 @@ import { Activity, AnyObjectNotString } from "activitypub-zod";
 import { z } from "zod";
 
 import { Errors, PublicDestination } from "../constants/index.js";
-import { isSingleOfType } from "../utils/activitypub-utils.js";
+import { isSingleObject, isSingleOfType } from "../utils/activitypub-utils.js";
 import {
   parseSignatureHeader,
   verifyDigest,
@@ -62,6 +62,19 @@ export async function handleRequest<T extends z.ZodType<AnyObjectNotString>>(
   }
 
   const url = new URL(signatureHeader.keyId);
+  const actorUrl = url.origin + url.pathname;
+  if (
+    !isSingleObject(object) ||
+    !("actor" in object) ||
+    typeof object.actor !== "string" ||
+    object.actor !== actorUrl
+  ) {
+    return {
+      error: Errors.invalidSignature,
+      reason: "`actor` and signature keyId don't match",
+    };
+  }
+
   const user = await syncExternalActor(context, url.origin + url.pathname);
   if (isSimpleError(user)) {
     return user;
