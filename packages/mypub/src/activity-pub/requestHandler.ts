@@ -45,6 +45,8 @@ export async function handleRequest<T extends z.ZodType<AnyObjectNotString>>(
     return { error: Errors.badRequest, reason: error };
   }
 
+  console.log(object);
+
   if (
     isSingleOfType<Activity>(object, "Delete") &&
     object.id?.endsWith("#delete") &&
