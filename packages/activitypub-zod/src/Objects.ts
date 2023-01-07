@@ -4,13 +4,14 @@ import { AnyActivity, AnyActivitySchema } from "./Activities.js";
 import { Actor, ActorSchema } from "./Actors.js";
 import { Collection, CollectionSchema } from "./Collection.js";
 import { dateValue, durationValue, UrlValue, urlValue } from "./common.js";
+import { ContextSchema } from "./Context.js";
 import { Link, LinkSchema } from "./Link.js";
 import {
   OrderedCollection,
   OrderedCollectionSchema,
 } from "./OrderedCollection.js";
 
-const ShallowObjectSchema = z.object({
+const ShallowObjectSchema = ContextSchema.extend({
   content: z.string().nullish(),
   contentMap: z.record(z.string()).nullish(),
   duration: durationValue.nullish(),

@@ -2,6 +2,7 @@
 
 exports[`OrderedCollection > parses https://mastodon.social/users/gargron/outbox 1`] = `
 {
+  "@context": "https://www.w3.org/ns/activitystreams",
   "first": "https://mastodon.social/users/Gargron/outbox?page=true",
   "id": "https://mastodon.social/users/Gargron/outbox",
   "last": "https://mastodon.social/users/Gargron/outbox?min_id=0&page=true",
@@ -12,6 +13,19 @@ exports[`OrderedCollection > parses https://mastodon.social/users/gargron/outbox
 
 exports[`OrderedCollectionPage > parses https://mastodon.social/users/gargron/outbox?page=true 1`] = `
 {
+  "@context": [
+    "https://www.w3.org/ns/activitystreams",
+    {
+      "Hashtag": "as:Hashtag",
+      "atomUri": "ostatus:atomUri",
+      "conversation": "ostatus:conversation",
+      "inReplyToAtomUri": "ostatus:inReplyToAtomUri",
+      "ostatus": "http://ostatus.org#",
+      "sensitive": "as:sensitive",
+      "toot": "http://joinmastodon.org/ns#",
+      "votersCount": "toot:votersCount",
+    },
+  ],
   "id": "https://mastodon.social/users/Gargron/outbox?page=true",
   "next": "https://mastodon.social/users/Gargron/outbox?max_id=109599392103350332&page=true",
   "orderedItems": [

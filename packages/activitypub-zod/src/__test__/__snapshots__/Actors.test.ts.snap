@@ -2,6 +2,65 @@
 
 exports[`Actors > parses https://mastodon.social/users/gargron 1`] = `
 {
+  "@context": [
+    "https://www.w3.org/ns/activitystreams",
+    "https://w3id.org/security/v1",
+    {
+      "Curve25519Key": "toot:Curve25519Key",
+      "Device": "toot:Device",
+      "Ed25519Key": "toot:Ed25519Key",
+      "Ed25519Signature": "toot:Ed25519Signature",
+      "EncryptedMessage": "toot:EncryptedMessage",
+      "PropertyValue": "schema:PropertyValue",
+      "alsoKnownAs": {
+        "@id": "as:alsoKnownAs",
+        "@type": "@id",
+      },
+      "cipherText": "toot:cipherText",
+      "claim": {
+        "@id": "toot:claim",
+        "@type": "@id",
+      },
+      "deviceId": "toot:deviceId",
+      "devices": {
+        "@id": "toot:devices",
+        "@type": "@id",
+      },
+      "discoverable": "toot:discoverable",
+      "featured": {
+        "@id": "toot:featured",
+        "@type": "@id",
+      },
+      "featuredTags": {
+        "@id": "toot:featuredTags",
+        "@type": "@id",
+      },
+      "fingerprintKey": {
+        "@id": "toot:fingerprintKey",
+        "@type": "@id",
+      },
+      "focalPoint": {
+        "@container": "@list",
+        "@id": "toot:focalPoint",
+      },
+      "identityKey": {
+        "@id": "toot:identityKey",
+        "@type": "@id",
+      },
+      "manuallyApprovesFollowers": "as:manuallyApprovesFollowers",
+      "messageFranking": "toot:messageFranking",
+      "messageType": "toot:messageType",
+      "movedTo": {
+        "@id": "as:movedTo",
+        "@type": "@id",
+      },
+      "publicKeyBase64": "toot:publicKeyBase64",
+      "schema": "http://schema.org#",
+      "suspended": "toot:suspended",
+      "toot": "http://joinmastodon.org/ns#",
+      "value": "schema:value",
+    },
+  ],
   "attachment": [
     {
       "name": "Patreon",

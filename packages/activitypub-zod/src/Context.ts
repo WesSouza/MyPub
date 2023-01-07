@@ -1,14 +1,16 @@
 import { z } from "zod";
 
-const ContextValue = z.union([
-  z.array(
-    z.union([
-      z.string(),
-      z.record(z.union([z.string(), z.record(z.string())])),
-    ]),
-  ),
-  z.string(),
-]);
+const ContextValue = z
+  .union([
+    z.array(
+      z.union([
+        z.string(),
+        z.record(z.union([z.string(), z.record(z.string())])),
+      ]),
+    ),
+    z.string(),
+  ])
+  .optional();
 
 export type Context = z.infer<typeof ContextValue>;
 
