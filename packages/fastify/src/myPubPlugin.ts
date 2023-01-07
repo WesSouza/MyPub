@@ -67,6 +67,16 @@ export function myPubFastify(
       return replyWithResponse(reply, response);
     });
 
+    fastify.get("/.well-known/nodeinfo", {}, async (_, reply) => {
+      const response = await myPub.handleNodeInfo();
+      return replyWithResponse(reply, response);
+    });
+
+    fastify.get(`/${pathSegments["node-info"]}`, {}, async (_, reply) => {
+      const response = await myPub.handleNodeInfoData();
+      return replyWithResponse(reply, response);
+    });
+
     fastify.get("/.well-known/webfinger", {}, async (fastifyRequest, reply) => {
       const request = await unwrapFastifyRequest(fastifyRequest, options);
       const response = await myPub.handleWebFinger(request);

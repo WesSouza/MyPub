@@ -11,6 +11,7 @@ import { MyPubContext } from "./MyPubContext.js";
 import { respondWithError } from "./utils/http-response.js";
 import { isSimpleError } from "./utils/simple-error.js";
 import { hostMeta } from "./wellKnown/hostMeta.js";
+import { nodeInfo, nodeInfoData } from "./wellKnown/nodeInfo.js";
 import { webFinger } from "./wellKnown/webFinger.js";
 
 export class MyPub {
@@ -32,6 +33,14 @@ export class MyPub {
 
   handleWebFinger = (request: Request) => {
     return webFinger(this.context, request);
+  };
+
+  handleNodeInfo = () => {
+    return nodeInfo(this.context);
+  };
+
+  handleNodeInfoData = () => {
+    return nodeInfoData(this.context);
   };
 
   handleActor = (

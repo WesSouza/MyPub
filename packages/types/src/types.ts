@@ -4,6 +4,7 @@ export type MyPubPathSegment =
   | "following"
   | "inbox"
   | "liked"
+  | "node-info"
   | "outbox"
   | "replies"
   | "shared-inbox"
