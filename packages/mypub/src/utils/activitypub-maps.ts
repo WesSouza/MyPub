@@ -39,6 +39,7 @@ export function mapActorToUserData(actor: Actor): UserData | SimpleError {
       following: 0,
       content: 0,
     },
+    inboxUrl: actor.inbox ?? undefined,
     publicKey: actor.publicKey?.publicKeyPem,
   };
 }

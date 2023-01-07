@@ -25,6 +25,7 @@ const UserSchema = new Schema<User>({
     following: { type: Number, default: 0 },
     content: { type: Number, default: 0 },
   },
+  inboxUrl: { type: String },
   publicKey: { type: String, required: true },
   created: { type: Date, required: true },
   updated: { type: Date, required: true },

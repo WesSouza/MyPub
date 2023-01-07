@@ -79,6 +79,7 @@ export type User = {
     profile?: string | undefined;
   };
   counts: Record<"followers" | "following" | "content", number>;
+  inboxUrl?: string | undefined;
   publicKey: string;
   created: Date;
   updated: Date;
