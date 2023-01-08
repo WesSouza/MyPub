@@ -6,7 +6,7 @@
     "build": "pnpm run -r build",
     "check": "pnpm run -r check",
     "dev": "pnpm run -r --parallel --stream dev",
-    "test": "pnpm run -r test",
+    "test": "pnpm run -r test run",
     "test:coverage": "pnpm run -r test:coverage"
   },
   "workspaces": [
