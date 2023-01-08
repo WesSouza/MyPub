@@ -1,15 +1,15 @@
-import { AnyObjectNotString, AnyObjectOrArray } from "activitypub-zod";
+import { AnyLinkObjectUrlArray, AnyObjectLink } from "activitypub-zod";
 
 export function isSingleObject(
-  fromObject: AnyObjectOrArray | null | undefined,
-): fromObject is AnyObjectNotString {
+  fromObject: AnyLinkObjectUrlArray | null | undefined,
+): fromObject is AnyObjectLink {
   return Boolean(
     fromObject && !Array.isArray(fromObject) && typeof fromObject === "object",
   );
 }
 
-export function isSingleOfType<T extends AnyObjectNotString>(
-  fromObject: AnyObjectOrArray | null | undefined,
+export function isSingleOfType<T extends AnyObjectLink>(
+  fromObject: AnyLinkObjectUrlArray | null | undefined,
   type: T["type"],
 ): fromObject is T {
   return Boolean(

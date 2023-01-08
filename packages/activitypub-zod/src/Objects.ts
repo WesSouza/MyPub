@@ -1,9 +1,20 @@
 import { z } from "zod";
 
-import { AnyActivity, AnyActivitySchema } from "./Activities.js";
+import {
+  AnyActivity,
+  AnyActivitySchema,
+  Question,
+  QuestionSchema,
+} from "./Activities.js";
 import { Actor, ActorSchema } from "./Actors.js";
 import { Collection, CollectionSchema } from "./Collection.js";
-import { dateValue, durationValue, UrlValue, urlValue } from "./common.js";
+import {
+  DateValue,
+  dateValue,
+  durationValue,
+  UrlValue,
+  urlValue,
+} from "./common.js";
 import { ContextSchema } from "./Context.js";
 import { Link, LinkSchema } from "./Link.js";
 import {
@@ -32,196 +43,210 @@ const ShallowObjectSchema = ContextSchema.extend({
   summaryMap: z.record(z.string()).nullish(),
   type: z.string(),
   updated: dateValue.nullish(),
+
+  // Mastodon
+  blurhash: z.string().nullish(),
+  conversation: z.string().nullish(),
+  focalPoint: z
+    .tuple([z.number().min(-1).max(1), z.number().min(-1).max(1)])
+    .nullish(),
+  sensitive: z.boolean().nullish(),
+
+  // Undocumented Mastodon >:-(
+  width: z.number().int().positive().nullish(),
+  height: z.number().int().positive().nullish(),
 });
 
-type LinkOrArray = UrlValue | Link | (UrlValue | Link)[];
-type LinkOrImageOrArray = UrlValue | Image | Link | (UrlValue | Image | Link)[];
-
-export type ObjectOrLink = UrlValue | ObjectType | Link;
-export type ObjectOrLinkOrArray = ObjectOrLink | ObjectOrLink[];
-type CollectionOrLink = UrlValue | Link | Collection | OrderedCollection;
-
-export type ObjectType = z.infer<typeof ShallowObjectSchema> & {
-  attachment?: ObjectOrLinkOrArray | null | undefined;
-  attributedTo?: ObjectOrLinkOrArray | null | undefined;
-  audience?: ObjectOrLinkOrArray | null | undefined;
-  bcc?: ObjectOrLinkOrArray | null | undefined;
-  bto?: ObjectOrLinkOrArray | null | undefined;
-  cc?: ObjectOrLinkOrArray | null | undefined;
-  context?: ObjectOrLinkOrArray | null | undefined;
-  generator?: ObjectOrLinkOrArray | null | undefined;
-  icon?: LinkOrImageOrArray | null | undefined;
-  image?: LinkOrImageOrArray | null | undefined;
-  inReplyTo?: ObjectOrLinkOrArray | null | undefined;
-  likes?: CollectionOrLink | null | undefined;
-  location?: ObjectOrLinkOrArray | null | undefined;
-  preview?: ObjectOrLink | null | undefined;
-  replies?: CollectionOrLink | null | undefined;
-  shares?: CollectionOrLink | null | undefined;
-  tag?: ObjectOrLinkOrArray | null | undefined;
-  to?: ObjectOrLinkOrArray | null | undefined;
-  url?: LinkOrArray | null | undefined;
+export type ObjectBase = z.infer<typeof ShallowObjectSchema> & {
+  attachment?: LinkObjectUrlArray | null | undefined;
+  attributedTo?: LinkObjectUrlArray | null | undefined;
+  audience?: LinkObjectUrlArray | null | undefined;
+  bcc?: LinkObjectUrlArray | null | undefined;
+  bto?: LinkObjectUrlArray | null | undefined;
+  cc?: LinkObjectUrlArray | null | undefined;
+  context?: LinkObjectUrlArray | null | undefined;
+  generator?: LinkObjectUrlArray | null | undefined;
+  icon?: ImageLinkUrlArray | null | undefined;
+  image?: ImageLinkUrlArray | null | undefined;
+  inReplyTo?: LinkObjectUrlArray | null | undefined;
+  likes?: CollectionLinkUrl | null | undefined;
+  location?: LinkObjectUrlArray | null | undefined;
+  preview?: LinkObjectUrl | null | undefined;
+  replies?: CollectionLinkUrl | null | undefined;
+  shares?: CollectionLinkUrl | null | undefined;
+  tag?: LinkObjectUrlArray | null | undefined;
+  to?: LinkObjectUrlArray | null | undefined;
+  url?: LinkUrlArray | null | undefined;
 };
 
-export const lazyObjectSchema = () => {
-  const objectOrLink = z.union([urlValue, LinkSchema, ObjectSchema]);
-  const collectionOrLink = z.union([
-    urlValue,
-    LinkSchema,
-    CollectionSchema,
-    OrderedCollectionSchema,
-  ]);
-  const objectOrLinkOrArray = z.union([objectOrLink, z.array(objectOrLink)]);
-  const linkOrArray = z.union([
-    urlValue,
-    LinkSchema,
-    z.array(z.union([urlValue, LinkSchema])),
-  ]);
-  const imageOrLinkOrArray = z.union([
-    urlValue,
-    LinkSchema,
-    ImageSchema,
-    z.array(z.union([urlValue, LinkSchema, ImageSchema])),
-  ]);
+export const lazyObjectBaseSchema = () => {
   return ShallowObjectSchema.extend({
-    attachment: objectOrLinkOrArray.nullish(),
-    attributedTo: objectOrLinkOrArray.nullish(),
-    audience: objectOrLinkOrArray.nullish(),
-    bcc: objectOrLinkOrArray.nullish(),
-    bto: objectOrLinkOrArray.nullish(),
-    cc: objectOrLinkOrArray.nullish(),
-    context: objectOrLinkOrArray.nullish(),
-    generator: objectOrLinkOrArray.nullish(),
-    icon: imageOrLinkOrArray.nullish(),
-    image: imageOrLinkOrArray.nullish(),
-    inReplyTo: objectOrLinkOrArray.nullish(),
-    likes: collectionOrLink.nullish(),
-    location: objectOrLinkOrArray.nullish(),
-    preview: objectOrLink.nullish(),
-    replies: collectionOrLink.nullish(),
-    shares: collectionOrLink.nullish(),
-    tag: objectOrLinkOrArray.nullish(),
-    to: objectOrLinkOrArray.nullish(),
-    url: linkOrArray.nullish(),
+    attachment: linkObjectUrlArray().nullish(),
+    attributedTo: linkObjectUrlArray().nullish(),
+    audience: linkObjectUrlArray().nullish(),
+    bcc: linkObjectUrlArray().nullish(),
+    bto: linkObjectUrlArray().nullish(),
+    cc: linkObjectUrlArray().nullish(),
+    context: linkObjectUrlArray().nullish(),
+    generator: linkObjectUrlArray().nullish(),
+    icon: imageLinkUrlArray().nullish(),
+    image: imageLinkUrlArray().nullish(),
+    inReplyTo: linkObjectUrlArray().nullish(),
+    likes: collectionLinkUrl().nullish(),
+    location: linkObjectUrlArray().nullish(),
+    preview: linkObjectUrl().nullish(),
+    replies: collectionLinkUrl().nullish(),
+    shares: collectionLinkUrl().nullish(),
+    tag: linkObjectUrlArray().nullish(),
+    to: linkObjectUrlArray().nullish(),
+    url: linkUrlArray().nullish(),
   });
 };
 
-export type Article = Omit<ObjectType, "type"> & {
+export type Article = Omit<ObjectBase, "type"> & {
   type: "Article";
 };
 
 export const ArticleSchema: z.ZodType<Article> = z.lazy(() =>
-  lazyObjectSchema()
+  lazyObjectBaseSchema()
     .omit({ type: true })
     .extend({
       type: z.literal("Article"),
     }),
 );
 
-export type Audio = Omit<ObjectType, "type"> & {
+export type Audio = Omit<ObjectBase, "type"> & {
   type: "Audio";
 };
 
 export const AudioSchema: z.ZodType<Audio> = z.lazy(() =>
-  lazyObjectSchema()
+  lazyObjectBaseSchema()
     .omit({ type: true })
     .extend({
       type: z.literal("Audio"),
     }),
 );
 
-export type Document = Omit<ObjectType, "type"> & {
+export type Document = Omit<ObjectBase, "type"> & {
   type: "Document";
 };
 
 export const DocumentSchema: z.ZodType<Document> = z.lazy(() =>
-  lazyObjectSchema()
+  lazyObjectBaseSchema()
     .omit({ type: true })
     .extend({
       type: z.literal("Document"),
     }),
 );
 
-export type Event = Omit<ObjectType, "type"> & {
+export type Event = Omit<ObjectBase, "type"> & {
   type: "Event";
 };
 
 export const EventSchema: z.ZodType<Event> = z.lazy(() =>
-  lazyObjectSchema()
+  lazyObjectBaseSchema()
     .omit({ type: true })
     .extend({
       type: z.literal("Event"),
     }),
 );
 
-export type Image = Omit<ObjectType, "type"> & {
+export type Image = Omit<ObjectBase, "type"> & {
   type: "Image";
 };
 
 export const ImageSchema: z.ZodType<Image> = z.lazy(() =>
-  lazyObjectSchema()
+  lazyObjectBaseSchema()
     .omit({ type: true })
     .extend({
       type: z.literal("Image"),
     }),
 );
 
-export type Note = Omit<ObjectType, "type"> & {
+export type Note = Omit<ObjectBase, "type"> & {
   type: "Note";
 };
 
 export const NoteSchema: z.ZodType<Note> = z.lazy(() =>
-  lazyObjectSchema()
+  lazyObjectBaseSchema()
     .omit({ type: true })
     .extend({
       type: z.literal("Note"),
     }),
 );
 
-export type Page = Omit<ObjectType, "type"> & {
+export type Page = Omit<ObjectBase, "type"> & {
   type: "Page";
 };
 
 export const PageSchema: z.ZodType<Page> = z.lazy(() =>
-  lazyObjectSchema()
+  lazyObjectBaseSchema()
     .omit({ type: true })
     .extend({
       type: z.literal("Page"),
     }),
 );
 
-export type Place = Omit<ObjectType, "type"> & {
+export type Place = Omit<ObjectBase, "type"> & {
   type: "Place";
+  accuracy?: number | null | undefined;
+  altitude?: number | null | undefined;
+  latitude?: number | null | undefined;
+  longitude?: number | null | undefined;
+  radius?: number | null | undefined;
+  units?:
+    | "cm"
+    | "feet"
+    | "inches"
+    | "km"
+    | "m"
+    | "miles"
+    | string
+    | null
+    | undefined;
 };
 
 export const PlaceSchema: z.ZodType<Place> = z.lazy(() =>
-  lazyObjectSchema()
+  lazyObjectBaseSchema()
     .omit({ type: true })
     .extend({
       type: z.literal("Place"),
+      accuracy: z.number().positive().nullable(),
+      altitude: z.number().nullable(),
+      latitude: z.number().nullable(),
+      longitude: z.number().nullable(),
+      radius: z.number().positive().nullable(),
+      units: z
+        .union([
+          z.enum(["cm", "feet", "inches", "km", "m", "miles"]),
+          z.string(),
+        ])
+        .nullable(),
     }),
 );
 
-export type Profile = Omit<ObjectType, "type"> & {
+export type Profile = Omit<ObjectBase, "type"> & {
   type: "Profile";
+  describes?: UrlValue | Actor | null | undefined;
 };
 
 export const ProfileSchema: z.ZodType<Profile> = z.lazy(() =>
-  lazyObjectSchema()
+  lazyObjectBaseSchema()
     .omit({ type: true })
     .extend({
       type: z.literal("Profile"),
+      describes: z.union([urlValue, ActorSchema]).nullable(),
     }),
 );
 
-export type PropertyValue = Omit<ObjectType, "name" | "type"> & {
+export type PropertyValue = Omit<ObjectBase, "name" | "type"> & {
   type: "PropertyValue";
   name: string;
   value: string;
 };
 
 export const PropertyValueSchema: z.ZodType<PropertyValue> = z.lazy(() =>
-  lazyObjectSchema()
+  lazyObjectBaseSchema()
     .omit({ name: true, type: true })
     .extend({
       type: z.literal("PropertyValue"),
@@ -230,62 +255,71 @@ export const PropertyValueSchema: z.ZodType<PropertyValue> = z.lazy(() =>
     }),
 );
 
-export type Relationship = Omit<ObjectType, "type"> & {
+export type Relationship = Omit<ObjectBase, "type"> & {
   type: "Relationship";
+  subject?: LinkObjectUrl | null | undefined;
+  object?: LinkObjectUrlArray | null | undefined;
+  relationship?: ObjectUrlArray | null | undefined;
 };
 
-export const RelationshipSchema: z.ZodType<Relationship> = z.lazy(() =>
-  lazyObjectSchema()
+export const RelationshipSchema: z.ZodType<Relationship> = z.lazy(() => {
+  return lazyObjectBaseSchema()
     .omit({ type: true })
     .extend({
       type: z.literal("Relationship"),
-    }),
-);
+      subject: linkObjectUrl().nullable(),
+      object: anyLinkObjectUrlArray().nullable(),
+      relationship: objectUrlArray().nullable(),
+    });
+});
 
-export type Tombstone = Omit<ObjectType, "type"> & {
+export type Tombstone = Omit<ObjectBase, "type"> & {
   type: "Tombstone";
+  formerType?: string | null | undefined;
+  deleted: DateValue;
 };
 
 export const TombstoneSchema: z.ZodType<Tombstone> = z.lazy(() =>
-  lazyObjectSchema()
+  lazyObjectBaseSchema()
     .omit({ type: true })
     .extend({
       type: z.literal("Tombstone"),
+      formerType: z.string().nullish(),
+      deleted: dateValue,
     }),
 );
 
-export type Video = Omit<ObjectType, "type"> & {
+export type Video = Omit<ObjectBase, "type"> & {
   type: "Video";
 };
 
 export const VideoSchema: z.ZodType<Video> = z.lazy(() =>
-  lazyObjectSchema()
+  lazyObjectBaseSchema()
     .omit({ type: true })
     .extend({
       type: z.literal("Video"),
     }),
 );
 
-export const ObjectSchema: z.ZodType<
-  | Article
-  | Audio
-  | Document
-  | Event
-  | Image
-  | Note
-  | Page
-  | Place
-  | Profile
-  | PropertyValue
-  | Relationship
-  | Tombstone
-  | Video
-  | ObjectType
-> = z.lazy(() =>
+// Mastodon
+export type Emoji = Omit<ObjectBase, "type"> & {
+  type: "Emoji";
+};
+
+export const EmojiSchema: z.ZodType<Emoji> = z.lazy(() =>
+  lazyObjectBaseSchema()
+    .omit({ type: true })
+    .extend({
+      type: z.literal("Emoji"),
+    }),
+);
+
+export const AnyObjectSchema: z.ZodType<AnyObject> = z.lazy(() =>
   z.union([
     ArticleSchema,
     AudioSchema,
     DocumentSchema,
+    EmojiSchema,
     EventSchema,
     ImageSchema,
     NoteSchema,
@@ -296,21 +330,76 @@ export const ObjectSchema: z.ZodType<
     RelationshipSchema,
     TombstoneSchema,
     VideoSchema,
-    lazyObjectSchema(),
+
+    // Mastodon uses Question as an object, not an activity >:-(
+    QuestionSchema,
+
+    lazyObjectBaseSchema(),
   ]),
 );
 
-export type AnyObject = AnyActivity | Actor | ObjectOrLink;
-export type AnyObjectNotString = AnyActivity | Actor | ObjectType | Link;
-export type AnyObjectOrArray = AnyObject | AnyObject[];
+export type AnyObject =
+  | Article
+  | Audio
+  | Document
+  | Emoji
+  | Event
+  | Image
+  | Note
+  | Page
+  | Place
+  | Profile
+  | PropertyValue
+  | Question
+  | Relationship
+  | Tombstone
+  | Video
+  | ObjectBase;
 
-export const anyObject = () =>
-  z.union([AnyActivitySchema, ActorSchema, urlValue, LinkSchema, ObjectSchema]);
-export const anyObjectOrArray = () =>
-  z.union([anyObject(), z.array(anyObject())]);
+export type ObjectUrlArray = AnyObject | UrlValue | (AnyObject | UrlValue)[];
+const objectUrlArray = () => z.union([AnyObjectSchema, urlValue]);
 
-export const AnyObjectSchema: z.ZodType<AnyObject> = z.lazy(anyObject);
+export type AnyLinkObjectUrl = AnyActivity | Actor | LinkObjectUrl;
+export const anyLinkObjectUrl = () =>
+  z.union([
+    AnyActivitySchema,
+    ActorSchema,
+    LinkSchema,
+    AnyObjectSchema,
+    urlValue,
+  ]);
+export const AnyLinkObjectUrlSchema: z.ZodType<AnyLinkObjectUrl> =
+  z.lazy(anyLinkObjectUrl);
 
-export const AnyObjectNotStringSchema: z.ZodType<AnyObjectNotString> = z.lazy(
-  () => z.union([AnyActivitySchema, ActorSchema, LinkSchema, ObjectSchema]),
+export type AnyLinkObjectUrlArray = AnyLinkObjectUrl | AnyLinkObjectUrl[];
+export const anyLinkObjectUrlArray = () =>
+  z.union([anyLinkObjectUrl(), z.array(anyLinkObjectUrl())]);
+
+export type LinkObjectUrl = Link | AnyObject | UrlValue;
+const linkObjectUrl = () => z.union([LinkSchema, AnyObjectSchema, urlValue]);
+
+export type LinkObjectUrlArray = LinkObjectUrl | LinkObjectUrl[];
+const linkObjectUrlArray = () =>
+  z.union([linkObjectUrl(), z.array(linkObjectUrl())]);
+
+type CollectionLinkUrl = UrlValue | Link | Collection | OrderedCollection;
+const collectionLinkUrl = () =>
+  z.union([CollectionSchema, OrderedCollectionSchema, LinkSchema, urlValue]);
+
+type LinkUrlArray = UrlValue | Link | (UrlValue | Link)[];
+const linkUrlArray = () =>
+  z.union([LinkSchema, urlValue, z.array(z.union([LinkSchema, urlValue]))]);
+
+type ImageLinkUrlArray = UrlValue | Image | Link | (UrlValue | Image | Link)[];
+const imageLinkUrlArray = () =>
+  z.union([
+    ImageSchema,
+    LinkSchema,
+    urlValue,
+    z.array(z.union([ImageSchema, LinkSchema, urlValue])),
+  ]);
+
+export type AnyObjectLink = AnyActivity | Actor | AnyObject | Link;
+export const AnyObjectLinkSchema: z.ZodType<AnyObjectLink> = z.lazy(() =>
+  z.union([AnyActivitySchema, ActorSchema, LinkSchema, AnyObjectSchema]),
 );

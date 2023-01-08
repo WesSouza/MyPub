@@ -1,5 +1,5 @@
 import { AsyncResult, MyPubContext } from "@mypub/types";
-import { Activity, AnyObjectNotString } from "activitypub-zod";
+import { Activity, AnyObjectLink } from "activitypub-zod";
 import { z } from "zod";
 
 import { Errors, PublicDestination } from "../constants/index.js";
@@ -12,7 +12,7 @@ import {
 import { isSimpleError } from "../utils/simple-error.js";
 import { syncExternalActor } from "./actor.js";
 
-export async function handleRequest<T extends z.ZodType<AnyObjectNotString>>(
+export async function handleRequest<T extends z.ZodType<AnyObjectLink>>(
   context: MyPubContext,
   request: Request,
   expectedSchema: T,

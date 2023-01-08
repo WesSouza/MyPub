@@ -3,13 +3,16 @@ import { z } from "zod";
 import { urlValue, UrlValue } from "./common.js";
 import { Link, LinkSchema } from "./Link.js";
 import {
-  anyObject,
-  AnyObject,
-  lazyObjectSchema,
-  ObjectType,
+  anyLinkObjectUrl,
+  AnyLinkObjectUrl,
+  lazyObjectBaseSchema,
+  ObjectBase,
 } from "./Objects.js";
 
-export type OrderedCollection<T = AnyObject> = Omit<ObjectType, "type"> & {
+export type OrderedCollection<T = AnyLinkObjectUrl> = Omit<
+  ObjectBase,
+  "type"
+> & {
   type: "OrderedCollection";
   current?: OrderedCollectionPage | UrlValue | Link | null | undefined;
   first?: OrderedCollectionPage | UrlValue | Link | null | undefined;
@@ -19,13 +22,13 @@ export type OrderedCollection<T = AnyObject> = Omit<ObjectType, "type"> & {
 };
 
 export const lazyOrderedCollectionSchema = (of?: z.ZodTypeAny) => {
-  of ??= anyObject();
+  of ??= anyLinkObjectUrl();
   const orderedCollectionPageOrLink = z.union([
     urlValue,
     LinkSchema,
     OrderedCollectionPageSchema,
   ]);
-  return lazyObjectSchema()
+  return lazyObjectBaseSchema()
     .omit({ type: true })
     .extend({
       type: z.literal("OrderedCollection"),
@@ -33,7 +36,7 @@ export const lazyOrderedCollectionSchema = (of?: z.ZodTypeAny) => {
       first: orderedCollectionPageOrLink.nullish(),
       last: orderedCollectionPageOrLink.nullish(),
       orderedItems: z.array(of).nullish(),
-      totalItems: z.number().positive().nullish(),
+      totalItems: z.number().int().positive().nullish(),
     });
 };
 
@@ -41,7 +44,7 @@ export const OrderedCollectionSchema: z.ZodType<OrderedCollection> = z.lazy(
   lazyOrderedCollectionSchema,
 );
 
-export type OrderedCollectionPage<T = AnyObject> = {
+export type OrderedCollectionPage<T = AnyLinkObjectUrl> = {
   type: "OrderedCollectionPage";
   current?: OrderedCollectionPage | UrlValue | Link | null | undefined;
   first?: OrderedCollectionPage | UrlValue | Link | null | undefined;
@@ -63,7 +66,7 @@ export const lazyOrderedCollectionPageSchema = (of?: z.ZodTypeAny) => {
       partOf: urlOrLink.nullish(),
       next: urlOrLink.nullish(),
       prev: urlOrLink.nullish(),
-      startIndex: z.number().positive().optional(),
+      startIndex: z.number().int().positive().optional(),
     });
 };
 

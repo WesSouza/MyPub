@@ -3,13 +3,13 @@ import { z } from "zod";
 import { urlValue, UrlValue } from "./common.js";
 import { Link, LinkSchema } from "./Link.js";
 import {
-  anyObject,
-  AnyObject,
-  lazyObjectSchema,
-  ObjectType,
+  anyLinkObjectUrl,
+  AnyLinkObjectUrl,
+  lazyObjectBaseSchema,
+  ObjectBase,
 } from "./Objects.js";
 
-export type Collection<T = AnyObject> = Omit<ObjectType, "type"> & {
+export type Collection<T = AnyLinkObjectUrl> = Omit<ObjectBase, "type"> & {
   type: "Collection";
   current?: CollectionPage | UrlValue | Link | null | undefined;
   first?: CollectionPage | UrlValue | Link | null | undefined;
@@ -19,13 +19,13 @@ export type Collection<T = AnyObject> = Omit<ObjectType, "type"> & {
 };
 
 export const lazyCollectionSchema = (of?: z.ZodTypeAny) => {
-  of ??= anyObject();
+  of ??= anyLinkObjectUrl();
   const collectionPageOrLink = z.union([
     urlValue,
     LinkSchema,
     CollectionPageSchema,
   ]);
-  return lazyObjectSchema()
+  return lazyObjectBaseSchema()
     .omit({ type: true })
     .extend({
       type: z.literal("Collection"),
@@ -33,14 +33,14 @@ export const lazyCollectionSchema = (of?: z.ZodTypeAny) => {
       first: collectionPageOrLink.nullish(),
       last: collectionPageOrLink.nullish(),
       items: z.array(of).nullish(),
-      totalItems: z.number().positive().nullish(),
+      totalItems: z.number().int().positive().nullish(),
     });
 };
 
 export const CollectionSchema: z.ZodType<Collection> =
   z.lazy(lazyCollectionSchema);
 
-export type CollectionPage<T = AnyObject> = {
+export type CollectionPage<T = AnyLinkObjectUrl> = {
   type: "CollectionPage";
   current?: CollectionPage | UrlValue | Link | null | undefined;
   first?: CollectionPage | UrlValue | Link | null | undefined;

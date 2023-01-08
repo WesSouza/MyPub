@@ -1,9 +1,9 @@
 import { z } from "zod";
 
 import { DateValue, dateValue, UrlValue, urlValue } from "./common.js";
-import { lazyObjectSchema, ObjectType } from "./Objects.js";
+import { lazyObjectBaseSchema, ObjectBase } from "./Objects.js";
 
-export type Actor = Omit<ObjectType, "id" | "type"> & {
+export type Actor = Omit<ObjectBase, "id" | "type"> & {
   id: string;
   type: "Application" | "Group" | "Organization" | "Person" | "Service";
   inbox?: UrlValue | null | undefined;
@@ -37,7 +37,7 @@ export type Actor = Omit<ObjectType, "id" | "type"> & {
 };
 
 export const lazyActor = () =>
-  lazyObjectSchema()
+  lazyObjectBaseSchema()
     .omit({ type: true })
     .extend({
       id: z.string(),

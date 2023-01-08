@@ -32,4 +32,16 @@ describe("OrderedCollectionPage", () => {
     const data = OrderedCollectionPageSchema.parse(JSON.parse(json));
     expect(data).toMatchSnapshot();
   });
+
+  it("parses https://hachyderm.io/users/wesbot/outbox?page=true", async () => {
+    const json = await readFile(
+      new URL(
+        "./fixtures/hachyderm-io-user-wesbot-outbox-page.json",
+        import.meta.url,
+      ),
+      "utf-8",
+    );
+    const data = OrderedCollectionPageSchema.parse(JSON.parse(json));
+    expect(data).toMatchSnapshot();
+  });
 });
