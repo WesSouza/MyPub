@@ -23,6 +23,7 @@
     "build": "tsc",
     "check": "pnpm run check:types && pnpm run lint",
     "check:types": "tsc --noEmit",
+    "dev": "tsc -w",
     "lint": "eslint --cache --cache-location \".cache/eslintcache\" src && prettier --check src"
   },
   "engines": {
