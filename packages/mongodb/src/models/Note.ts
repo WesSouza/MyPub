@@ -3,7 +3,9 @@ import mongoose from "mongoose";
 
 const { Schema } = mongoose;
 
-const NoteSchema = new Schema<Note>({
+export type NoteWithoutId = Omit<Note, "id">;
+
+const NoteSchema = new Schema<NoteWithoutId>({
   user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   application: {
     type: {
