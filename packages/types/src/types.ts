@@ -110,6 +110,7 @@ export type UserKeys = {
 
 export type Note = {
   user: User;
+  destination: { user: User }[];
   application?: MastodonApplication;
   content: string;
   language: string;
