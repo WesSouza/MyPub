@@ -42,7 +42,7 @@
     "mypub": "workspace:*"
   },
   "dependencies": {
-    "mongoose": "^6.8.1"
+    "mongoose": "^6.11.3"
   },
   "devDependencies": {
     "@mypub/build-utils": "workspace:*",
